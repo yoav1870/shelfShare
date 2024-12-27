@@ -1,24 +1,13 @@
-import { useState } from "react";
-import {
-  AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
-  Box,
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
-} from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
+import { AppBar, Toolbar, IconButton, Box } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useTheme } from "@mui/material/styles";
+import { Link, useLocation } from "react-router-dom";
+import { getPageName } from "../tools/utils";
 
 const AppTop = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
   const theme = useTheme();
+  const location = useLocation();
 
   return (
     <Box>
@@ -30,52 +19,31 @@ const AppTop = () => {
           marginBottom: "1rem",
         }}
       >
-        <Toolbar>
-          <IconButton
-            edge="start"
-            sx={{ color: theme.palette.primary.contrastText }}
-            aria-label="menu"
-            onClick={() => setMenuOpen(true)}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography
-            variant="h6"
-            sx={{ flexGrow: 1, color: theme.palette.primary.contrastText }}
-          >
-            ShelfShare
-          </Typography>
+        <Toolbar sx={{ justifyContent: "space-between" }}>
           <IconButton sx={{ color: theme.palette.primary.contrastText }}>
-            <SearchIcon />
+            <Link to="/favorites" style={{ color: "inherit" }}>
+              <FavoriteBorderIcon />
+            </Link>
           </IconButton>
           <IconButton sx={{ color: theme.palette.primary.contrastText }}>
-            <FavoriteBorderIcon />
+            <Link
+              to={location.pathname}
+              style={{
+                color: "inherit",
+                textDecoration: "none",
+              }}
+            >
+              {getPageName(location.pathname)}
+            </Link>
           </IconButton>
+
           <IconButton sx={{ color: theme.palette.primary.contrastText }}>
-            <ShoppingCartIcon />
+            <Link to="/search" style={{ color: "inherit" }}>
+              <SearchIcon />
+            </Link>
           </IconButton>
         </Toolbar>
       </AppBar>
-
-      <Drawer anchor="left" open={menuOpen} onClose={() => setMenuOpen(false)}>
-        <List
-          sx={{
-            width: 250,
-            backgroundColor: theme.palette.background.default,
-            color: theme.palette.text.primary,
-          }}
-        >
-          <ListItem button>
-            <ListItemText primary="Option 1" />
-          </ListItem>
-          <ListItem button>
-            <ListItemText primary="Option 2" />
-          </ListItem>
-          <ListItem button>
-            <ListItemText primary="Option 3" />
-          </ListItem>
-        </List>
-      </Drawer>
     </Box>
   );
 };
