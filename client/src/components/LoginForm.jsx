@@ -51,7 +51,7 @@ const LoginForm = ({ onSwitch }) => {
         >
           <Button
             variant="text"
-            color="secondary"
+            color={theme.palette.secondary.main}
             size="small"
             onClick={() => onSwitch("forgot")}
           >
