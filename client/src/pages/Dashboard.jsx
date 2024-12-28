@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Box, Container, Typography } from "@mui/material";
 import axios from "axios";
-import AppTop from "../components/AppTop";
 import Categories from "../components/Categories";
 import BooksList from "../components/BooksList";
 

@@ -5,10 +5,16 @@ import TravelExploreIcon from "@mui/icons-material/TravelExplore";
 import BookIcon from "@mui/icons-material/Book";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import { useTheme } from "@mui/material/styles";
+import { useNavigate } from "react-router-dom";
 import { t } from "../tools/utils";
 
 const Footer = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
+
+  const handleNavigation = (path) => {
+    navigate(path);
+  };
 
   return (
     <BottomNavigation
@@ -28,6 +34,7 @@ const Footer = () => {
       <BottomNavigationAction
         label={t("explore")}
         icon={<TravelExploreIcon />}
+        onClick={() => handleNavigation("/explore")}
         sx={{
           color: theme.palette.text.primary,
           "& .MuiBottomNavigationAction-label": {
@@ -40,6 +47,7 @@ const Footer = () => {
       <BottomNavigationAction
         label={t("search")}
         icon={<SearchIcon />}
+        onClick={() => handleNavigation("/search")}
         sx={{
           color: theme.palette.text.primary,
           "& .MuiBottomNavigationAction-label": {
@@ -50,8 +58,9 @@ const Footer = () => {
         }}
       />
       <BottomNavigationAction
-        label={t("add book")}
+        label={t("add-book")}
         icon={<PostAddIcon />}
+        onClick={() => handleNavigation("/add-book")}
         sx={{
           color: theme.palette.text.primary,
           "& .MuiBottomNavigationAction-label": {
@@ -62,8 +71,9 @@ const Footer = () => {
         }}
       />
       <BottomNavigationAction
-        label={t("my books")}
+        label={t("my-books")}
         icon={<BookIcon />}
+        onClick={() => handleNavigation("/my-books")}
         sx={{
           color: theme.palette.text.primary,
           "& .MuiBottomNavigationAction-label": {
@@ -76,6 +86,7 @@ const Footer = () => {
       <BottomNavigationAction
         label={t("profile")}
         icon={<AccountCircleIcon />}
+        onClick={() => handleNavigation("/profile")}
         sx={{
           color: theme.palette.text.primary,
           "& .MuiBottomNavigationAction-label": {
