@@ -13,7 +13,7 @@ const bookSchema = new Schema(
     },
     metadata: { type: Schema.Types.Mixed },
   },
-  { collection: "books", timestamps: true }
+  { collection: "books" }
 );
 
 const Book = model("Book", bookSchema);
