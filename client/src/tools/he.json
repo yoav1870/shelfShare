@@ -20,5 +20,6 @@
   "more-information": "מידע נוסף",
   "submit": "שלח",
   "max-pics-error": "ניתן להעלות עד 3 תמונות",
-  "location-error": "יש להזין מיקום עצמאית"
+  "location-error": "יש להזין מיקום עצמאית",
+  "search-placeholder": "חיפוש ספרים"
 }
