@@ -6,5 +6,19 @@
   "add-book": "הוסף ספר",
   "explore": "ספרים",
   "books gave in each month": "ספרים שהושאלו בכל חודש",
-  "favorite genres": "סוגי ספרים מועדפים"
+  "favorite genres": "סוגי ספרים מועדפים",
+  "title": "כותרת",
+  "state": "מצב",
+  "new": "חדש",
+  "used": "משומש",
+  "upload-picture": " העלה תמונה -ניתן עד 3 ",
+  "location-to-pick-up": "מיקום לאיסוף",
+  "use-my-location": "השתמש במיקומי",
+  "author": "מחבר",
+  "genre": "ז׳אנר",
+  "tags": "תגיות",
+  "more-information": "מידע נוסף",
+  "submit": "שלח",
+  "max-pics-error": "ניתן להעלות עד 3 תמונות",
+  "location-error": "יש להזין מיקום עצמאית"
 }

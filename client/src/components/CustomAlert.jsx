@@ -1,18 +1,26 @@
 import { Alert, Snackbar } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { useEffect } from "react";
 
 const CustomAlert = ({ open, message, severity, onClose }) => {
   const theme = useTheme();
 
+  useEffect(() => {
+    if (open) {
+      const timer = setTimeout(() => {
+        onClose();
+      }, 8000);
+      return () => clearTimeout(timer);
+    }
+  }, [open, onClose]);
+
   return (
     <Snackbar
       open={open}
-      onClose={onClose}
       anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      sx={{ zIndex: 999 }}
+      sx={{ zIndex: 999, top: 64 }}
     >
       <Alert
-        onClose={onClose}
         severity={severity}
         sx={{
           backgroundColor:
@@ -22,7 +30,14 @@ const CustomAlert = ({ open, message, severity, onClose }) => {
           color: theme.palette.primary.contrastText,
           fontWeight: "bold",
           boxShadow: `0px 4px 10px ${theme.palette.primary.light}`,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: 2,
+          width: "50%",
         }}
+        action={null}
+        onClick={onClose}
       >
         {message}
       </Alert>

@@ -4,6 +4,7 @@ import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ProfilePage from "./pages/ProfilePage";
 import { Box } from "@mui/material";
+import AddBookForm from "./pages/AddBookForm";
 
 const App = () => {
   return (
@@ -27,6 +28,14 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/add-book"
+            element={
+              <ProtectedRoute>
+                <AddBookForm />
               </ProtectedRoute>
             }
           />
