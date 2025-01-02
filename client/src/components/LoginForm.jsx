@@ -5,22 +5,26 @@ import {
   Typography,
   Stack,
   Box,
+  Alert,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { isValidEmail } from "../tools/utils";
 
 const LoginForm = ({ onSwitch }) => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  const [error, setLocalError] = useState("");
   const theme = useTheme();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    setLocalError("");
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -28,12 +32,13 @@ const LoginForm = ({ onSwitch }) => {
     e.preventDefault();
     const { email, password } = formData;
 
-    if (!email) {
-      console.error("Email is required.");
+    if (!email || !password) {
+      setLocalError("Email and Password are required.");
       return;
     }
-    if (!password) {
-      console.error("Password is required.");
+
+    if (!isValidEmail(email)) {
+      setLocalError("Invalid email.");
       return;
     }
 
@@ -48,7 +53,7 @@ const LoginForm = ({ onSwitch }) => {
         navigate("/my-books");
       }
     } catch (error) {
-      console.error("Login Error:", error);
+      setLocalError(error.response?.data?.message || error.message);
     }
   };
 
@@ -93,11 +98,16 @@ const LoginForm = ({ onSwitch }) => {
           onChange={handleChange}
           value={formData.password}
         />
+        {error && (
+          <Alert severity="error" sx={{ mt: 1 }}>
+            {error}
+          </Alert>
+        )}
         <Box
           sx={{
             display: "flex",
             justifyContent: "flex-start",
-            mt: -1,
+            mt: 1, // Adjust spacing to fit better visually
           }}
         >
           <Button

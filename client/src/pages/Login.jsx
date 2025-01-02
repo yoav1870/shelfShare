@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Container } from "@mui/material";
+import { Box, Container, Alert } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import LoginForm from "../components/LoginForm";
 import RegisterForm from "../components/RegisterForm";
@@ -8,6 +8,10 @@ import ForgotPasswordForm from "../components/ForgotPasswordForm";
 const Login = () => {
   const [activeForm, setActiveForm] = useState("login");
   const theme = useTheme();
+
+  const handleSwitch = (form) => {
+    setActiveForm(form);
+  };
 
   return (
     <Container
@@ -18,6 +22,7 @@ const Login = () => {
         justifyContent: "center",
         alignItems: "center",
         height: "100vh",
+        flexDirection: "column",
       }}
     >
       <Box
@@ -36,10 +41,10 @@ const Login = () => {
               : "rotateX(0deg)",
         }}
       >
-        {activeForm === "login" && <LoginForm onSwitch={setActiveForm} />}
-        {activeForm === "register" && <RegisterForm onSwitch={setActiveForm} />}
+        {activeForm === "login" && <LoginForm onSwitch={handleSwitch} />}
+        {activeForm === "register" && <RegisterForm onSwitch={handleSwitch} />}
         {activeForm === "forgot" && (
-          <ForgotPasswordForm onSwitch={setActiveForm} />
+          <ForgotPasswordForm onSwitch={handleSwitch} />
         )}
       </Box>
     </Container>

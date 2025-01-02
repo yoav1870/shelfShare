@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Container,
   TextField,
@@ -6,12 +6,37 @@ import {
   Typography,
   Stack,
   IconButton,
+  Alert,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useTheme } from "@mui/material/styles";
+import axios from "axios";
+import { isValidEmail } from "../tools/utils";
 
 const ForgotPasswordForm = ({ onSwitch }) => {
   const theme = useTheme();
+  const [email, setEmail] = useState("");
+  const [localError, setLocalError] = useState("");
+
+  const handleSubmit = async () => {
+    setLocalError("");
+    if (!email) {
+      setLocalError("Email is required.");
+      return;
+    }
+    if (!isValidEmail(email)) {
+      setLocalError("Invalid email.");
+      return;
+    }
+    try {
+      await axios.post(`${import.meta.env.VITE_SERVER_URI}/api/auth/forgot`, {
+        email,
+      });
+      onSwitch("login");
+    } catch (error) {
+      setLocalError(error.response?.data?.message || error.message);
+    }
+  };
 
   return (
     <Container
@@ -33,7 +58,6 @@ const ForgotPasswordForm = ({ onSwitch }) => {
         justifyContent: "center",
       }}
     >
-      {/* Back to Login Icon */}
       <IconButton
         sx={{
           position: "absolute",
@@ -61,31 +85,19 @@ const ForgotPasswordForm = ({ onSwitch }) => {
           label="Email"
           variant="outlined"
           fullWidth
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              "& fieldset": {
-                borderColor: theme.palette.primary.main,
-              },
-              "&:hover fieldset": {
-                borderColor: theme.palette.primary.dark,
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: theme.palette.primary.dark,
-              },
-            },
-          }}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
+        {localError && (
+          <Alert severity="error" sx={{ mt: 1 }}>
+            {localError}
+          </Alert>
+        )}
         <Button
           variant="contained"
           color="primary"
           fullWidth
-          sx={{
-            fontFamily: theme.typography.fontFamily,
-            backgroundColor: theme.palette.primary.main,
-            "&:hover": {
-              backgroundColor: theme.palette.primary.dark,
-            },
-          }}
+          onClick={handleSubmit}
         >
           Reset Password
         </Button>

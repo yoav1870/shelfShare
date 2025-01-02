@@ -5,11 +5,13 @@ import {
   Typography,
   Stack,
   IconButton,
+  Alert,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useTheme } from "@mui/material/styles";
 import { useState } from "react";
 import axios from "axios";
+import { isValidEmail, validatePassword } from "../tools/utils";
 
 const RegisterForm = ({ onSwitch }) => {
   const theme = useTheme();
@@ -18,9 +20,15 @@ const RegisterForm = ({ onSwitch }) => {
     password: "",
     passwordConfirm: "",
   });
+  const [localError, setLocalError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    setLocalError("");
+    if (name === "passwordConfirm" && value !== formData.password) {
+      setLocalError("Passwords do not match.");
+    }
+
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -29,15 +37,22 @@ const RegisterForm = ({ onSwitch }) => {
     const { email, password, passwordConfirm } = formData;
 
     if (!email || !password || !passwordConfirm) {
-      console.error("All fields are required.");
+      setLocalError("All fields are required.");
       return;
     }
 
     if (password !== passwordConfirm) {
-      console.error("Passwords do not match.");
+      setLocalError("Passwords do not match.");
       return;
     }
 
+    if (!validatePassword(password)) {
+      setLocalError("Password is weak.");
+      return;
+    }
+    if (!isValidEmail(email)) {
+      setLocalError("Invalid email.");
+    }
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_SERVER_URI}/api/auth/register`,
@@ -48,9 +63,10 @@ const RegisterForm = ({ onSwitch }) => {
         onSwitch("login");
       }
     } catch (error) {
-      console.error("Registration Error:", error);
+      setLocalError(error.response?.data?.message || error.message);
     }
   };
+
   return (
     <Container
       sx={{
@@ -99,19 +115,6 @@ const RegisterForm = ({ onSwitch }) => {
           variant="outlined"
           fullWidth
           name="email"
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              "& fieldset": {
-                borderColor: theme.palette.primary.main,
-              },
-              "&:hover fieldset": {
-                borderColor: theme.palette.primary.dark,
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: theme.palette.primary.dark,
-              },
-            },
-          }}
           onChange={handleChange}
           value={formData.email}
         />
@@ -121,19 +124,6 @@ const RegisterForm = ({ onSwitch }) => {
           variant="outlined"
           fullWidth
           name="password"
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              "& fieldset": {
-                borderColor: theme.palette.primary.main,
-              },
-              "&:hover fieldset": {
-                borderColor: theme.palette.primary.dark,
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: theme.palette.primary.dark,
-              },
-            },
-          }}
           onChange={handleChange}
           value={formData.password}
         />
@@ -141,35 +131,20 @@ const RegisterForm = ({ onSwitch }) => {
           label="Confirm Password"
           type="password"
           variant="outlined"
-          name="passwordConfirm"
           fullWidth
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              "& fieldset": {
-                borderColor: theme.palette.primary.main,
-              },
-              "&:hover fieldset": {
-                borderColor: theme.palette.primary.dark,
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: theme.palette.primary.dark,
-              },
-            },
-          }}
+          name="passwordConfirm"
           onChange={handleChange}
           value={formData.passwordConfirm}
         />
+        {localError && (
+          <Alert severity="error" sx={{ mt: 1 }}>
+            {localError}
+          </Alert>
+        )}
         <Button
           variant="contained"
           color="primary"
           fullWidth
-          sx={{
-            fontFamily: theme.typography.fontFamily,
-            backgroundColor: theme.palette.primary.main,
-            "&:hover": {
-              backgroundColor: theme.palette.primary.dark,
-            },
-          }}
           onClick={handleSubmit}
         >
           Register
