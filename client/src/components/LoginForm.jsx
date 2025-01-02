@@ -7,9 +7,50 @@ import {
   Box,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = ({ onSwitch }) => {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
   const theme = useTheme();
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const { email, password } = formData;
+
+    if (!email) {
+      console.error("Email is required.");
+      return;
+    }
+    if (!password) {
+      console.error("Password is required.");
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_SERVER_URI}/api/auth/login`,
+        formData
+      );
+      if (res.status === 200) {
+        console.log("Login Successful:", res.data);
+        localStorage.setItem("token", res.data.token);
+        navigate("/my-books");
+      }
+    } catch (error) {
+      console.error("Login Error:", error);
+    }
+  };
 
   return (
     <Container
@@ -35,12 +76,22 @@ const LoginForm = ({ onSwitch }) => {
         >
           Login
         </Typography>
-        <TextField label="Email" variant="outlined" fullWidth />
+        <TextField
+          label="Email"
+          name="email"
+          variant="outlined"
+          fullWidth
+          onChange={handleChange}
+          value={formData.email}
+        />
         <TextField
           label="Password"
+          name="password"
           type="password"
           variant="outlined"
           fullWidth
+          onChange={handleChange}
+          value={formData.password}
         />
         <Box
           sx={{
@@ -51,7 +102,7 @@ const LoginForm = ({ onSwitch }) => {
         >
           <Button
             variant="text"
-            color={theme.palette.secondary.main}
+            color="primary"
             size="small"
             onClick={() => onSwitch("forgot")}
           >
@@ -64,6 +115,7 @@ const LoginForm = ({ onSwitch }) => {
             color="primary"
             fullWidth
             sx={{ flex: 2 }}
+            onClick={handleSubmit}
           >
             Login
           </Button>

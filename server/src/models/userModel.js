@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 
 const userSchema = new Schema(
   {
-    name: { type: String, required: true },
+    name: { type: String },
     email: { type: String, required: true, unique: true, match: /.+\@.+\..+/ },
     password: { type: String, required: true },
     preferences: { type: Schema.Types.Mixed, default: {} },

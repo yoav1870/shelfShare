@@ -4,14 +4,23 @@ const { generateToken } = require("../utils/jwt");
 const authController = {
   async register(req, res) {
     try {
-      const { name, email, password } = req.body;
+      const { email, password, passwordConfirm } = req.body;
 
+      if (!email || !password || !passwordConfirm) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+      if (password !== passwordConfirm) {
+        return res.status(400).json({ message: "Passwords are not match" });
+      }
       const existingUser = await User.findOne({ email });
       if (existingUser) {
         return res.status(400).json({ message: "Email is already registered" });
       }
 
-      const user = new User({ name, email, password });
+      const user = new User({ email, password });
+      if (!user) {
+        throw new Error("Error creating user");
+      }
       await user.save();
       res.status(201).json({ message: "User registered successfully" });
     } catch (err) {

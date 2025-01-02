@@ -1,5 +1,6 @@
 const express = require("express");
 require("./config/db");
+const cors = require("cors");
 
 const app = express();
 
@@ -7,9 +8,10 @@ const { authRouter } = require("./routers/authRouter");
 const { booksRouter } = require("./routers/booksRouter");
 
 app.use(express.json());
-
-app.use("/auth", authRouter);
-app.use("/books", booksRouter);
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
+app.use("/api/auth", authRouter);
+app.use("/api/books", booksRouter);
 
 app.get("/", (req, res) => res.send("Hello World!"));
 

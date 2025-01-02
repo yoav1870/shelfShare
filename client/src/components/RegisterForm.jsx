@@ -8,10 +8,49 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useTheme } from "@mui/material/styles";
+import { useState } from "react";
+import axios from "axios";
 
 const RegisterForm = ({ onSwitch }) => {
   const theme = useTheme();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    passwordConfirm: "",
+  });
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const { email, password, passwordConfirm } = formData;
+
+    if (!email || !password || !passwordConfirm) {
+      console.error("All fields are required.");
+      return;
+    }
+
+    if (password !== passwordConfirm) {
+      console.error("Passwords do not match.");
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_SERVER_URI}/api/auth/register`,
+        formData
+      );
+      if (res.status === 201) {
+        console.log("Registration Successful:", res.data);
+        onSwitch("login");
+      }
+    } catch (error) {
+      console.error("Registration Error:", error);
+    }
+  };
   return (
     <Container
       sx={{
@@ -32,7 +71,6 @@ const RegisterForm = ({ onSwitch }) => {
         justifyContent: "center",
       }}
     >
-      {/* Back to Login Icon */}
       <IconButton
         sx={{
           position: "absolute",
@@ -60,6 +98,7 @@ const RegisterForm = ({ onSwitch }) => {
           label="Email"
           variant="outlined"
           fullWidth
+          name="email"
           sx={{
             "& .MuiOutlinedInput-root": {
               "& fieldset": {
@@ -73,12 +112,15 @@ const RegisterForm = ({ onSwitch }) => {
               },
             },
           }}
+          onChange={handleChange}
+          value={formData.email}
         />
         <TextField
           label="Password"
           type="password"
           variant="outlined"
           fullWidth
+          name="password"
           sx={{
             "& .MuiOutlinedInput-root": {
               "& fieldset": {
@@ -92,11 +134,14 @@ const RegisterForm = ({ onSwitch }) => {
               },
             },
           }}
+          onChange={handleChange}
+          value={formData.password}
         />
         <TextField
           label="Confirm Password"
           type="password"
           variant="outlined"
+          name="passwordConfirm"
           fullWidth
           sx={{
             "& .MuiOutlinedInput-root": {
@@ -111,6 +156,8 @@ const RegisterForm = ({ onSwitch }) => {
               },
             },
           }}
+          onChange={handleChange}
+          value={formData.passwordConfirm}
         />
         <Button
           variant="contained"
@@ -123,6 +170,7 @@ const RegisterForm = ({ onSwitch }) => {
               backgroundColor: theme.palette.primary.dark,
             },
           }}
+          onClick={handleSubmit}
         >
           Register
         </Button>
