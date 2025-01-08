@@ -28,16 +28,11 @@ const booksController = {
           .json({ error: "Book details could not be retrieved" });
       }
 
-      const validDonorRefId =
-        donor_refId && /^[a-fA-F0-9]{24}$/.test(donor_refId)
-          ? donor_refId
-          : null;
-
       const book = new Book({
         title: title,
         author: author || fetchedBookData.authors,
         genre: genre || fetchedBookData.categories || "Unknown",
-        donor_refId: validDonorRefId,
+        donor_refId: req.user.id,
         status: status || "Available",
         metadata: metadata || {
           description: fetchedBookData.description,

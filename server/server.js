@@ -1,6 +1,7 @@
 const express = require("express");
 require("./config/db");
 const cors = require("cors");
+const { authMiddleware } = require("./middleware/auth");
 
 const app = express();
 
@@ -12,7 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(cors());
 app.use("/api/auth", authRouter);
-app.use("/api/books", booksRouter);
+app.use("/api/books", authMiddleware, booksRouter);
 
 app.get("/", (req, res) => res.send("Hello World!"));
 
