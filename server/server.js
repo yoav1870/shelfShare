@@ -9,6 +9,7 @@ const { booksRouter } = require("./routers/booksRouter");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.use(cors());
 app.use("/api/auth", authRouter);
 app.use("/api/books", booksRouter);
