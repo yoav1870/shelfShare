@@ -29,7 +29,7 @@ const booksController = {
       }
 
       const book = new Book({
-        title: title,
+        title: fetchedBookData.title,
         author: author || fetchedBookData.authors,
         genre: genre || fetchedBookData.categories || "Unknown",
         donor_refId: req.user.id,
