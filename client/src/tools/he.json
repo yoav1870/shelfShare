@@ -22,5 +22,12 @@
   "max-pics-error": "ניתן להעלות עד 3 תמונות",
   "location-error": "יש להזין מיקום עצמאית",
   "search-placeholder": "חיפוש ספרים",
-  "required-fields": "יש למלא את כל השדות המסומנים בכוכבית"
+  "required-fields": "יש למלא את כל השדות המסומנים בכוכבית",
+  "book-recommendations": "המלצות ספרים",
+  "donated-books": "ספרים שתרמת",
+  "borrowed-books": "ספרים שהשאלת",
+  "select-limit": "בחר מספר ספרים להציג",
+  "no-recommended-books": "לא נמצאו המלצות ספרים",
+  "no-donated-books": "לא נמצאו ספרים שתרמת",
+  "no-borrowed-books": "לא נמצאו ספרים שהשאלת"
 }
