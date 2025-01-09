@@ -7,8 +7,18 @@ const userSchema = new Schema(
     email: { type: String, required: true, unique: true, match: /.+\@.+\..+/ },
     password: { type: String, required: true },
     preferences: { type: Schema.Types.Mixed, default: {} },
-    donation_history: [{ type: Schema.Types.ObjectId, ref: "Book" }],
-    request_history: [{ type: Schema.Types.ObjectId, ref: "Book" }],
+    donation_history: [
+      {
+        book: { type: Schema.Types.ObjectId, ref: "Book" },
+        donatedAt: { type: Date, default: Date.now },
+      },
+    ],
+    request_history: [
+      {
+        book: { type: Schema.Types.ObjectId, ref: "Book" },
+        requestedAt: { type: Date, default: Date.now },
+      },
+    ],
   },
   { collection: "users" }
 );

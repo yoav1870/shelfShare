@@ -7,4 +7,6 @@ booksRouter.get("/", booksController.getAllBooks);
 
 booksRouter.post("/", booksController.addBook);
 
+booksRouter.get("/:title", booksController.searchBookByTitle);
+
 module.exports = { booksRouter };

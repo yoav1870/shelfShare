@@ -14,7 +14,7 @@ const booksController = {
 
   async addBook(req, res) {
     try {
-      const { title, author, genre, donor_refId, status, metadata } = req.body;
+      const { title, author, genre, status, metadata } = req.body;
 
       if (!title) {
         return res.status(400).json({ error: "Please provide title" });
@@ -47,6 +47,24 @@ const booksController = {
       res.status(201).json(book);
     } catch (err) {
       res.status(500).json({ error: "Internal server error" + err });
+    }
+  },
+
+  async searchBookByTitle(req, res) {
+    try {
+      const { title } = req.params;
+      if (!title) {
+        return res.status(400).json({ error: "Please provide title" });
+      }
+      const books = await Book.find({ $text: { $search: title } });
+      if (books.length === 0) {
+        return res.status(404).json({ error: "No books found" });
+      }
+
+      res.status(200).json(books);
+    } catch (err) {
+      console.error("Error searching book by title:", err);
+      res.status(500).json({ error: "Internal server error" });
     }
   },
 };

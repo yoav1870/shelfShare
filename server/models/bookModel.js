@@ -16,5 +16,7 @@ const bookSchema = new Schema(
   { collection: "books" }
 );
 
+bookSchema.index({ title: "text" });
+
 const Book = model("Book", bookSchema);
 module.exports = Book;
