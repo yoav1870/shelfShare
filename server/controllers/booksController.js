@@ -46,7 +46,7 @@ const booksController = {
       await book.save();
       res.status(201).json(book);
     } catch (err) {
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: "Internal server error" + err });
     }
   },
 };
