@@ -12,6 +12,8 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { isValidEmail } from "../tools/utils";
+import { useDispatch } from "react-redux";
+import { setUser } from "../redux/userSlice";
 
 const LoginForm = ({ onSwitch }) => {
   const [formData, setFormData] = useState({
@@ -20,6 +22,7 @@ const LoginForm = ({ onSwitch }) => {
   });
   const [error, setLocalError] = useState("");
   const theme = useTheme();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -50,6 +53,7 @@ const LoginForm = ({ onSwitch }) => {
       if (res.status === 200) {
         console.log("Login Successful:", res.data);
         localStorage.setItem("token", res.data.token);
+        dispatch(setUser(res.data.user));
         navigate("/my-books");
       }
     } catch (error) {

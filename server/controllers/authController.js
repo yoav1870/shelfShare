@@ -45,7 +45,7 @@ const authController = {
       }
 
       const token = generateToken(user._id);
-      res.json({ token });
+      res.json({ user, token });
     } catch (err) {
       res.status(400).json({ message: "Error logging in", error: err.message });
     }

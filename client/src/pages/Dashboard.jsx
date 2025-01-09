@@ -14,8 +14,10 @@ import BooksList from "../components/BooksList";
 import CustomAlert from "../components/CustomAlert";
 import jsonCategories from "../tools/categories.json";
 import { t } from "../tools/utils";
+import { useSelector } from "react-redux";
 
 const Dashboard = () => {
+  const user = useSelector((state) => state.user.user);
   const [categories, setCategories] = useState([]);
   const [recommendedBooks, setRecommendedBooks] = useState([]);
   const [donatedBooks, setDonatedBooks] = useState([]);
@@ -26,46 +28,38 @@ const Dashboard = () => {
   const fetchBooks = async () => {
     try {
       const token = localStorage.getItem("token");
-      const baseURL = `${import.meta.env.VITE_SERVER_URI}/api/books`;
+      const baseURL = `${import.meta.env.VITE_SERVER_URI}/api/user`;
 
-      const recBooksRes = await axios.get(`${baseURL}/recommendations`, {
+      // const recBooksRes = await axios.get(`${baseURL}/recommendations`, {
+      //   headers: { Authorization: `Bearer ${token}` },
+      //   params: { userId: user._id, limit: 10 },
+      // });
+      // setRecommendedBooks(recBooksRes.data);
+      const donatedBooksRes = await axios.get(`${baseURL}/donations`, {
         headers: { Authorization: `Bearer ${token}` },
-        params: { limit },
-      });
-      if (recBooksRes.data.length === 0) {
-        setError(t("no-recommended-books"));
-      }
-      setRecommendedBooks(recBooksRes.data);
-
-      const donatedBooksRes = await axios.get(`${baseURL}/donated`, {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { limit },
+        // params: { userId: user._id, limit: 10 },
       });
 
-      if (donatedBooksRes.data.length === 0) {
-        setError(t("no-donated-books"));
-      }
       setDonatedBooks(donatedBooksRes.data);
 
-      const borrowedBooksRes = await axios.get(`${baseURL}/borrowed`, {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { limit },
-      });
-
-      if (borrowedBooksRes.data.length === 0) {
-        setError(t("no-borrowed-books"));
-      }
-      setBorrowedBooks(borrowedBooksRes.data);
+      // const borrowedBooksRes = await axios.get(`${baseURL}/user/requests`, {
+      //   headers: { Authorization: `Bearer ${token}` },
+      //   params: { userId: user._id, limit: 10 },
+      // });
+      // setBorrowedBooks(borrowedBooksRes.data);
     } catch (error) {
       console.error("Error fetching books:", error);
-      setError(t("error-fetching-data"));
+      setError("Failed to fetch books");
     }
   };
 
   useEffect(() => {
-    fetchBooks();
+    if (user) {
+      console.log("Fetching books...");
+      fetchBooks();
+    }
     setCategories(jsonCategories.categories);
-  }, [limit]); // Re-fetch when limit changes
+  }, [limit]);
 
   return (
     <Box>
