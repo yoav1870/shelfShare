@@ -32,7 +32,14 @@ const Categories = ({ categories }) => {
             >
               <Typography variant="h5">{category.icon}</Typography>
             </Box>
-            <Typography variant="caption" color={theme.palette.text.secondary}>
+            <Typography
+              variant="caption"
+              color={theme.palette.text.secondary}
+              sx={{
+                textAlign: "center",
+                whiteSpace: "normal",
+              }}
+            >
               {category.label}
             </Typography>
           </Box>

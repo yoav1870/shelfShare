@@ -21,5 +21,6 @@
   "submit": "שלח",
   "max-pics-error": "ניתן להעלות עד 3 תמונות",
   "location-error": "יש להזין מיקום עצמאית",
-  "search-placeholder": "חיפוש ספרים"
+  "search-placeholder": "חיפוש ספרים",
+  "required-fields": "יש למלא את כל השדות המסומנים בכוכבית"
 }
