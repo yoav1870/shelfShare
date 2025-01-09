@@ -105,20 +105,55 @@ const AddBookForm = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Form Data:", formData);
-    // setFormData({
-    //   title: "",
-    //   state: "",
-    //   pics: [],
-    //   location: "",
-    //   author: "",
-    //   genre: "",
-    //   tags: "",
-    //   more: "",
-    //   cityOptions: [],
-    // });
+
+    if (!formData.title || !formData.state) {
+      setAlert({
+        open: true,
+        message: t("required-fields"),
+        severity: "error",
+      });
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_SERVER_URI}/api/books`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (res.status === 201) {
+        setAlert({
+          open: true,
+          message: t("book-added"),
+          severity: "success",
+        });
+        setFormData({
+          title: "",
+          state: "",
+          pics: [],
+          location: "",
+          author: "",
+          genre: "",
+          tags: "",
+          more: "",
+          cityOptions: [],
+        });
+      }
+    } catch (error) {
+      setAlert({
+        open: true,
+        message: error.response?.data?.message || error.message,
+        severity: "error",
+      });
+    }
   };
 
   return (

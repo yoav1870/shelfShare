@@ -3,11 +3,13 @@ import { Box, Container, Typography } from "@mui/material";
 import axios from "axios";
 import Categories from "../components/Categories";
 import BooksList from "../components/BooksList";
+import jsonCategories from "../tools/categories.json";
 
 // TEMP UNTIL IDAN WILL DO THE DATABASE!// TODO:
 const Dashboard = () => {
   const [categories, setCategories] = useState([]);
   const [books, setBooks] = useState([]);
+
   const mockCategories = [
     { label: "נוער", icon: "👟" },
     { label: "עיון", icon: "💡" },
@@ -18,30 +20,26 @@ const Dashboard = () => {
     { label: 'מד"ב', icon: "🚀" },
   ];
 
-  const mockBooks = [
-    {
-      title: "הנערה החדשה",
-      author: "דניאל סילבה",
-      image: "https://via.placeholder.com/100x150",
-      action: "שלח לקינדל",
-    },
-    {
-      title: "יאלה",
-      author: "ענת קלו לברון",
-      image: "https://via.placeholder.com/100x150",
-      action: "שלח לקינדל",
-    },
-    {
-      title: "1984",
-      author: "ג'ורג' אורוול",
-      image: "https://via.placeholder.com/100x150",
-      action: "שלח לקינדל",
-    },
-  ];
-
   useEffect(() => {
-    setCategories(mockCategories);
-    setBooks(mockBooks);
+    const fetchBooks = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_SERVER_URI}/api/books`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        setBooks(res.data);
+        console.log("res.data", res.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchBooks();
+    setCategories(jsonCategories.categories);
   }, []);
 
   return (
