@@ -27,11 +27,34 @@ const Dashboard = () => {
   const fetchBooks = async () => {
     try {
       const token = localStorage.getItem("token");
-      const baseURLBook = `${import.meta.env.VITE_SERVER_URI}/api/books`;
-      const allBooksRes = await axios.get(`${baseURLBook}`, {
+      const baseURLBook = `${import.meta.env.VITE_SERVER_URI}/api/user`;
+
+      // const recommendedBooks = await axios.get(
+      //   `${baseURLBook}/recommendations`,
+      //   {
+      //     headers: { Authorization: `Bearer ${token}` },
+      //   }
+      // );
+
+      // if (recommendedBooks.status === 200) {
+      //   setRecommendedBooks(recommendedBooks.data);
+      // }
+
+      const donatedBooks = await axios.get(`${baseURLBook}/donations`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setDonatedBooks(allBooksRes.data);
+
+      if (donatedBooks.status === 200) {
+        setDonatedBooks(donatedBooks.data);
+      }
+
+      const borrowedBooks = await axios.get(`${baseURLBook}/requests`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (borrowedBooks.status === 200) {
+        setBorrowedBooks(borrowedBooks.data);
+      }
     } catch (error) {
       console.error("Error fetching books:", error);
       setError(t("error-fetching-data"));
@@ -46,11 +69,21 @@ const Dashboard = () => {
   const renderSection = (title, books) => {
     return (
       <Box sx={{ marginBottom: 4 }}>
-        <Typography variant="h6" gutterBottom>
+        <Typography variant="h6" gutterBottom sx={{ textAlign: "right" }}>
           {title}
         </Typography>
         {books.length === 0 ? (
-          <Alert severity="warning">{t("no-books-available")}</Alert>
+          <Alert
+            severity="warning"
+            sx={{
+              textAlign: "right",
+              direction: "rtl",
+              fontSize: "1rem",
+              gap: 1,
+            }}
+          >
+            {t("no-books-available")}
+          </Alert>
         ) : (
           <BooksList books={books} />
         )}

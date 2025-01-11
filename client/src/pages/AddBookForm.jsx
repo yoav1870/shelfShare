@@ -189,7 +189,9 @@ const AddBookForm = () => {
         <InputLabel>{t("state")}</InputLabel>
         <Select name="state" value={formData.state} onChange={handleChange}>
           <MenuItem value="new">{t("new")}</MenuItem>
+          <MenuItem value="used">{t("like new")}</MenuItem>
           <MenuItem value="used">{t("used")}</MenuItem>
+          <MenuItem value="used">{t("heavily used")}</MenuItem>
         </Select>
       </FormControl>
       <Box

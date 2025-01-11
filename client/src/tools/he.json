@@ -10,7 +10,9 @@
   "title": "כותרת",
   "state": "מצב",
   "new": "חדש",
+  "like new": "כמו חדש",
   "used": "משומש",
+  "heavily used": "משומש מאוד",
   "upload-picture": " העלה תמונה -ניתן עד 3 ",
   "location-to-pick-up": "מיקום לאיסוף",
   "use-my-location": "השתמש במיקומי",
@@ -27,5 +29,6 @@
   "donated-books": "ספרים שתרמת",
   "borrowed-books": "ספרים שהשאלת",
   "select-limit": "בחר מספר ספרים להציג",
-  "no-books-available": "אין ספרים זמינים"
+  "no-books-available": "אין ספרים זמינים",
+  "book-added": "הספר נוסף בהצלחה תודה על התרומה"
 }

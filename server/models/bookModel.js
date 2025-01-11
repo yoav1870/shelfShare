@@ -11,6 +11,14 @@ const bookSchema = new Schema(
       enum: ["Available", "Borrowed", "Reserved"],
       default: "Available",
     },
+    state: {
+      type: String,
+      enum: ["new", "like new", "used", "heavily used"],
+      required: true,
+    },
+
+    pics: [{ type: String }],
+    location: { type: String },
     metadata: { type: Schema.Types.Mixed },
   },
   { collection: "books" }
