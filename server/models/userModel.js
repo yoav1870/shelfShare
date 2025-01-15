@@ -23,6 +23,7 @@ const userSchema = new Schema(
         requestedAt: { type: Date, default: Date.now },
       },
     ],
+    liked_books: [{ type: Schema.Types.ObjectId, ref: "Book" }],
   },
   { collection: "users" }
 );
