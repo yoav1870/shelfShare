@@ -1,34 +1,67 @@
 import { useEffect, useState } from "react";
-import {
-  Box,
-  TextField,
-  Typography,
-  IconButton,
-  Card,
-  CardMedia,
-  CardContent,
-  Button,
-  Chip,
-} from "@mui/material";
+import { Box, TextField, IconButton } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { useTheme } from "@mui/material/styles";
+import axios from "axios";
 import jsonCategories from "../tools/categories.json";
 import Categories from "../components/Categories";
 import { t } from "../tools/utils";
+import CustomAlert from "../components/CustomAlert";
+import BooksList from "../components/BooksList";
 
 const Search = () => {
   const theme = useTheme();
   const [categories, setCategories] = useState([]);
   const [books, setBooks] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [alert, setAlert] = useState({
+    open: false,
+    message: "",
+    severity: "info",
+  });
+
+  const fetchBooks = async (query, isCategory = false) => {
+    const token = localStorage.getItem("token");
+    const baseURLBook = `${import.meta.env.VITE_SERVER_URI}/api/books`;
+    const endpoint = isCategory ? `/category/${query}` : `/${query}`;
+
+    try {
+      const response = await axios.get(`${baseURLBook}${endpoint}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.status === 200 && response.data.length > 0) {
+        setBooks(response.data);
+      } else {
+        setBooks([]);
+        setAlert({
+          open: true,
+          message: t("no-books-available"),
+          severity: "warning",
+        });
+      }
+    } catch (error) {
+      setAlert({
+        open: true,
+        message: t("server-error."),
+        severity: "error",
+      });
+    }
+  };
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
 
+  const handleCategoryClick = (category) => {
+    fetchBooks(category, true);
+  };
+
+  const handleCloseAlert = () => {
+    setAlert((prev) => ({ ...prev, open: false }));
+  };
+
   useEffect(() => {
-    // fetchBooks();
     setCategories(jsonCategories.categories);
   }, []);
 
@@ -63,74 +96,21 @@ const Search = () => {
             sx: { padding: 1, direction: "rtl" },
           }}
         />
-        <IconButton color="primary">
+        <IconButton color="primary" onClick={() => fetchBooks(searchQuery)}>
           <SearchIcon />
         </IconButton>
       </Box>
-      <Categories categories={categories} />
-
-      <Box>
-        {/* {books.map((book, index) => (
-          <Card
-            key={index}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: 2,
-              padding: 1,
-              boxShadow: 1,
-            }}
-          >
-            <CardMedia
-              component="img"
-              image={book.image}
-              alt={book.title}
-              sx={{ width: 80, height: 120, borderRadius: 1 }}
-            />
-            <CardContent sx={{ flexGrow: 1, padding: 1, direction: "rtl" }}>
-              <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                {book.title}
-              </Typography>
-              <Typography variant="subtitle1" color="text.secondary">
-                {book.author}
-              </Typography>
-              <Box
-                sx={{ display: "flex", gap: 1, flexWrap: "wrap", marginTop: 1 }}
-              >
-                {book.tags.map((tag, idx) => (
-                  <Chip key={idx} label={tag} size="small" />
-                ))}
-              </Box>
-            </CardContent>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 1,
-              }}
-            >
-              <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                {book.price}
-              </Typography>
-              <Button
-                variant="outlined"
-                size="small"
-                sx={{
-                  fontWeight: "bold",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                הוסף לעגלה
-              </Button>
-              <IconButton color="secondary">
-                <FavoriteBorderIcon />
-              </IconButton>
-            </Box>
-          </Card>
-        ))} */}
-      </Box>
+      <Categories
+        categories={categories}
+        onCategorySelect={handleCategoryClick}
+      />
+      <BooksList books={books} showActionButton={true} />
+      <CustomAlert
+        open={alert.open}
+        message={alert.message}
+        severity={alert.severity}
+        onClose={handleCloseAlert}
+      />
     </Box>
   );
 };

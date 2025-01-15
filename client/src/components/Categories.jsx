@@ -2,7 +2,7 @@ import { Box, Container, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import PropTypes from "prop-types";
 
-const Categories = ({ categories }) => {
+const Categories = ({ categories, onCategorySelect }) => {
   const theme = useTheme();
 
   return (
@@ -18,6 +18,8 @@ const Categories = ({ categories }) => {
             display="flex"
             flexDirection="column"
             alignItems="center"
+            onClick={() => onCategorySelect(category.value)}
+            sx={{ cursor: "pointer" }}
           >
             <Box
               sx={{
@@ -47,10 +49,6 @@ const Categories = ({ categories }) => {
       </Box>
     </Container>
   );
-};
-
-Categories.propTypes = {
-  categories: PropTypes.array.isRequired,
 };
 
 export default Categories;
