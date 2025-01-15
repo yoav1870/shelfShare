@@ -1,4 +1,3 @@
-const { get } = require("mongoose");
 const Book = require("../models/bookModel");
 const { fetchBookDataById } = require("../services/googleBooksService");
 
@@ -60,10 +59,11 @@ const booksController = {
       }
       const books = await Book.find({ $text: { $search: title } });
       if (books.length === 0) {
-        return res.status(404).json({ error: "No books found" });
-      }
-
-      res.status(200).json(books);
+        const fetchedBook = await fetchBookDataById(title);
+        if (fetchedBook) {
+          return res.status(200).json(fetchedBook);
+        } else return res.status(404).json({ error: "Book not found" });
+      } else res.status(200).json(books);
     } catch (err) {
       console.error("Error searching book by title:", err);
       res.status(500).json({ error: "Internal server error" });
