@@ -129,6 +129,23 @@ const booksController = {
       return res.status(500).json({ error: "Internal server error" + err });
     }
   },
+
+  async searchBookByCategory(req, res) {
+    try {
+      const { category } = req.params;
+      if (!category) {
+        return res.status(400).json({ error: "Please provide category" });
+      }
+      const books = await Book.find({ genre: category });
+      if (books.length === 0) {
+        return res.status(404).json({ error: "No books found" });
+      }
+      res.status(200).json(books);
+    } catch (err) {
+      console.error("Error searching book by category:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  },
 };
 
 module.exports = { booksController };
