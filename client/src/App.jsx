@@ -34,6 +34,14 @@ const App = () => {
             }
           />
           <Route
+            path="/favorites"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/add-book"
             element={
               <ProtectedRoute>
