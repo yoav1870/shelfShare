@@ -20,6 +20,7 @@ const bookSchema = new Schema(
     pics: [{ type: String }],
     location: { type: String },
     metadata: { type: Schema.Types.Mixed },
+    averageRating: { type: Number, default: 0 },
   },
   { collection: "books" }
 );
