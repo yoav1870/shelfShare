@@ -223,20 +223,22 @@ const booksController = {
     }
   },
 
-  async searchBookByCategory(req, res) {
+  async searchBookByGenre(req, res) {
     try {
-      const { category } = req.params;
-      if (!category) {
-        return res.status(400).json({ error: "Please provide category" });
+      const { genre } = req.params;
+
+      if (!genre) {
+        return res.status(400).json({ error: "Genre is required" });
       }
-      const books = await Book.find({ genre: category });
+
+      const books = await Book.find({ genre: genre });
       if (books.length === 0) {
         return res.status(404).json({ error: "No books found" });
       }
+
       res.status(200).json(books);
     } catch (err) {
-      console.error("Error searching book by category:", err);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: "Internal server error: " + err.message });
     }
   },
 };
