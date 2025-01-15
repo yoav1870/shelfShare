@@ -9,7 +9,7 @@ const userSchema = new Schema(
     preferences: {
       favoriteGenres: [String],
       favoriteAuthors: [String],
-      viewedBooks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Book" }],
+      viewedBooks: [{ type: Schema.Types.ObjectId, ref: "Book" }],
     },
     donation_history: [
       {

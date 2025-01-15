@@ -5,7 +5,7 @@ const booksRouter = new Router();
 
 booksRouter.get("/", booksController.getAllBooks);
 booksRouter.get("/:title", booksController.searchBookByTitle);
-booksRouter.get("/genre/:genre", booksController.getRecommendedBooks);
+// booksRouter.get("/genre/:genre", booksController.getRecommendedBooks);
 
 booksRouter.post("/request", booksController.requestBook);
 booksRouter.post("/", booksController.addBook);

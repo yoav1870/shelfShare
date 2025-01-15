@@ -43,6 +43,8 @@ const userController = {
       res.status(500).json({ error: "Internal server error" + err });
     }
   },
+
+  async getUserDetails(req, res) {},
 };
 
 module.exports = { userController };
