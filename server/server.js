@@ -9,7 +9,7 @@ const { authRouter } = require("./routers/authRouter");
 const { booksRouter } = require("./routers/booksRouter");
 const { userRouter } = require("./routers/userRouter");
 
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cors());

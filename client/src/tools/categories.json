@@ -3,49 +3,64 @@
     {
       "label": "הרפתקאות",
       "value": "Adventure and adventurers",
-      "icon": "📚"
+      "icon": "🏞️"
     },
-    { "label": "שירה אמריקאית", "value": "American poetry", "icon": "📚" },
+    { "label": "שירה אמריקאית", "value": "American poetry", "icon": "📝" },
     {
       "label": "עתיקות ואוספים",
       "value": "Antiques & Collectibles",
-      "icon": "📚"
+      "icon": "🏺"
     },
-    { "label": "אמנות", "value": "Art", "icon": "📚" },
-    { "label": "אוטוביוגרפיה", "value": "Autobiography", "icon": "📚" },
+    { "label": "אמנות", "value": "Art", "icon": "🎨" },
+    { "label": "אוטוביוגרפיה", "value": "Autobiography", "icon": "🖊️" },
     {
       "label": "ביבליוגרפית",
       "value": "Bibliographical literature",
-      "icon": "📚"
+      "icon": "📖"
     },
-    { "label": "ביבליוגרפיה", "value": "Bibliography", "icon": "📚" },
-    { "label": "ביבלימניה", "value": "Bibliomania", "icon": "📚" },
-    { "label": "ספרים עם לוחות", "value": "Board books", "icon": "📚" },
-    { "label": "איסוף ספרים", "value": "Book collecting", "icon": "📚" },
-    { "label": "עיצוב ספרים", "value": "Book design", "icon": "📚" },
+    { "label": "ביבליוגרפיה", "value": "Bibliography", "icon": "📖" },
+    { "label": "ספרים עם לוחות", "value": "Board books", "icon": "📘" },
+    { "label": "איסוף ספרים", "value": "Book collecting", "icon": "📦" },
+    { "label": "עיצוב ספרים", "value": "Book design", "icon": "🖌️" },
     {
       "label": "תעשיית הספרים ומסחר",
       "value": "Book industries and trade",
-      "icon": "📚"
+      "icon": "📊"
     },
-    { "label": "שירה על ספרים", "value": "Book verse", "icon": "📚" },
-    { "label": "כריכת ספרים", "value": "Bookbinding", "icon": "📚" },
-    { "label": "עסקים וכלכלה", "value": "Business & Economics", "icon": "📚" },
-    { "label": "מלאכת יד ותחביבים", "value": "Crafts & Hobbies", "icon": "📚" },
-    { "label": "עיצוב", "value": "Design", "icon": "📚" },
-    { "label": "חינוך", "value": "Education", "icon": "📚" },
-    { "label": "ספרות בדיונית", "value": "Fiction", "icon": "📚" },
-    { "label": "היסטוריה", "value": "History", "icon": "📚" },
-    { "label": "ספרות לנוער", "value": "Juvenile Fiction", "icon": "📚" },
+    { "label": "שירה על ספרים", "value": "Book verse", "icon": "📜" },
+    { "label": "כריכת ספרים", "value": "Bookbinding", "icon": "📙" },
+    { "label": "עסקים וכלכלה", "value": "Business & Economics", "icon": "💼" },
+    { "label": "מלאכת יד ותחביבים", "value": "Crafts & Hobbies", "icon": "✂️" },
+    { "label": "עיצוב", "value": "Design", "icon": "🖌️" },
+    { "label": "חינוך", "value": "Education", "icon": "🎓" },
+    { "label": "ספרות בדיונית", "value": "Fiction", "icon": "📖" },
+    { "label": "היסטוריה", "value": "History", "icon": "🏺" },
+    { "label": "ספרות לנוער", "value": "Juvenile Fiction", "icon": "📖" },
     {
       "label": "אמנויות השפה",
       "value": "Language Arts & Disciplines",
-      "icon": "📚"
+      "icon": "🗣️"
     },
     { "label": "אוספי ספרות", "value": "Literary Collections", "icon": "📚" },
-    { "label": "ביקורת ספרותית", "value": "Literary Criticism", "icon": "📚" },
-    { "label": "רפואה", "value": "Medical", "icon": "📚" },
-    { "label": "דת", "value": "Religion", "icon": "📚" },
-    { "label": "מדעי החברה", "value": "Social Science", "icon": "📚" }
+    { "label": "ביקורת ספרותית", "value": "Literary Criticism", "icon": "📝" },
+    { "label": "רפואה", "value": "Medical", "icon": "⚕️" },
+    { "label": "דת", "value": "Religion", "icon": "🙏" },
+    { "label": "מדעי החברה", "value": "Social Science", "icon": "🌐" },
+    { "label": "מדע בדיוני", "value": "Science Fiction", "icon": "🚀" },
+    { "label": "רומנטיקה", "value": "Romance", "icon": "❤️" },
+    { "label": "ספרי מתח", "value": "Thrillers", "icon": "🔪" },
+    { "label": "ספרי בלשים", "value": "Mystery", "icon": "🕵️‍♂️" },
+    { "label": "מדע", "value": "Science", "icon": "🔬" },
+    { "label": "פסיכולוגיה", "value": "Psychology", "icon": "🧠" },
+    { "label": "מדריכי טיולים", "value": "Travel Guides", "icon": "🌍" },
+    { "label": "ספרי ילדים", "value": "Children's Books", "icon": "🐻" },
+    { "label": "פנטזיה", "value": "Fantasy", "icon": "🐉" },
+    { "label": "קומיקס", "value": "Comics", "icon": "🦸‍♂️" },
+    { "label": "שירה", "value": "Poetry", "icon": "📜" },
+    { "label": "פילוסופיה", "value": "Philosophy", "icon": "🤔" },
+    { "label": "ספרי אוכל", "value": "Cookbooks", "icon": "🍳" },
+    { "label": "ספורט", "value": "Sports", "icon": "🏅" },
+    { "label": "מוזיקה", "value": "Music", "icon": "🎵" },
+    { "label": "ספרי חיות", "value": "Animal Books", "icon": "🐾" }
   ]
 }

@@ -1,48 +1,51 @@
 import { Alert, Snackbar } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { useEffect } from "react";
+import PropTypes from "prop-types";
 
-const CustomAlert = ({ open, message, severity, onClose }) => {
+const CustomAlert = ({
+  open,
+  message,
+  severity = "info",
+  onClose,
+  autoHideDuration = 8000,
+}) => {
   const theme = useTheme();
-
-  useEffect(() => {
-    if (open) {
-      const timer = setTimeout(() => {
-        onClose();
-      }, 8000);
-      return () => clearTimeout(timer);
-    }
-  }, [open, onClose]);
 
   return (
     <Snackbar
       open={open}
       anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      sx={{ zIndex: 999, top: 64 }}
+      autoHideDuration={autoHideDuration}
+      onClose={onClose}
     >
       <Alert
         severity={severity}
         sx={{
-          backgroundColor:
+          backgroundColor: theme.palette.background.paper,
+          color: theme.palette.text.primary,
+          direction: "rtl",
+          fontSize: "1rem",
+          padding: "8px 16px",
+          gap: 1,
+          boxShadow: `4px 4px 10px ${
             severity === "error"
               ? theme.palette.error.main
-              : theme.palette.primary.main,
-          color: theme.palette.primary.contrastText,
-          fontWeight: "bold",
-          boxShadow: `0px 4px 10px ${theme.palette.primary.light}`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          borderRadius: 2,
-          width: "50%",
+              : theme.palette.primary.light
+          }`,
         }}
-        action={null}
-        onClick={onClose}
       >
         {message}
       </Alert>
     </Snackbar>
   );
+};
+
+CustomAlert.propTypes = {
+  open: PropTypes.bool.isRequired,
+  message: PropTypes.string.isRequired,
+  severity: PropTypes.oneOf(["error", "warning", "info", "success"]),
+  onClose: PropTypes.func.isRequired,
+  autoHideDuration: PropTypes.number,
 };
 
 export default CustomAlert;

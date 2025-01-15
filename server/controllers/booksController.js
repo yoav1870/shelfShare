@@ -15,39 +15,40 @@ const booksController = {
 
   async addBook(req, res) {
     try {
-      const { title, author, genre, status, metadata } = req.body;
+      const { title, state, author, genre, metadata, pics, location } =
+        req.body;
 
-      if (!title) {
-        return res.status(400).json({ error: "Please provide title" });
+      if (!title || !state) {
+        return res
+          .status(400)
+          .json({ error: "Please provide title and state" });
       }
 
       const fetchedBookData = await fetchBookDataById(title);
 
-      if (!fetchedBookData) {
-        return res
-          .status(404)
-          .json({ error: "Book details could not be retrieved" });
-      }
-
       const book = new Book({
-        title: fetchedBookData.title,
-        author: author || fetchedBookData.authors,
-        genre: genre || fetchedBookData.categories || "Unknown",
+        title: fetchedBookData?.title || title.trim().toLowerCase(),
+        author: fetchedBookData?.authors || author || "Unknown",
+        genre: fetchedBookData?.categories || genre || "Uncategorized",
         donor_refId: req.user.id,
-        status: status || "Available",
+        status: "Available",
+        state,
+        pics: pics || [],
+        location: location || "Not specified",
         metadata: metadata || {
-          description: fetchedBookData.description,
-          publisher: fetchedBookData.publisher,
-          publishedDate: fetchedBookData.publishedDate,
-          pageCount: fetchedBookData.pageCount,
-          thumbnail: fetchedBookData.thumbnail,
+          description:
+            fetchedBookData?.description || "No description available.",
+          publisher: fetchedBookData?.publisher || "Unknown",
+          publishedDate: fetchedBookData?.publishedDate || "Unknown",
+          pageCount: fetchedBookData?.pageCount || 0,
+          thumbnail: fetchedBookData?.thumbnail || null,
         },
       });
-
       await book.save();
-      res.status(201).json(book);
+      res.status(201).json("Book added successfully");
     } catch (err) {
-      res.status(500).json({ error: "Internal server error" + err });
+      console.error("Error adding book:", err);
+      res.status(500).json({ error: "Internal server error" });
     }
   },
 

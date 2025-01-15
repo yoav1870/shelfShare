@@ -7,6 +7,7 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  Alert,
 } from "@mui/material";
 import axios from "axios";
 import Categories from "../components/Categories";
@@ -26,36 +27,34 @@ const Dashboard = () => {
   const fetchBooks = async () => {
     try {
       const token = localStorage.getItem("token");
-      const baseURL = `${import.meta.env.VITE_SERVER_URI}/api/books`;
+      const baseURLBook = `${import.meta.env.VITE_SERVER_URI}/api/user`;
 
-      const recBooksRes = await axios.get(`${baseURL}/recommendations`, {
+      // const recommendedBooks = await axios.get(
+      //   `${baseURLBook}/recommendations`,
+      //   {
+      //     headers: { Authorization: `Bearer ${token}` },
+      //   }
+      // );
+
+      // if (recommendedBooks.status === 200) {
+      //   setRecommendedBooks(recommendedBooks.data);
+      // }
+
+      const donatedBooks = await axios.get(`${baseURLBook}/donations`, {
         headers: { Authorization: `Bearer ${token}` },
-        params: { limit },
-      });
-      if (recBooksRes.data.length === 0) {
-        setError(t("no-recommended-books"));
-      }
-      setRecommendedBooks(recBooksRes.data);
-
-      const donatedBooksRes = await axios.get(`${baseURL}/donated`, {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { limit },
-      });
-
-      if (donatedBooksRes.data.length === 0) {
-        setError(t("no-donated-books"));
-      }
-      setDonatedBooks(donatedBooksRes.data);
-
-      const borrowedBooksRes = await axios.get(`${baseURL}/borrowed`, {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { limit },
       });
 
-      if (borrowedBooksRes.data.length === 0) {
-        setError(t("no-borrowed-books"));
+      if (donatedBooks.status === 200) {
+        setDonatedBooks(donatedBooks.data);
       }
-      setBorrowedBooks(borrowedBooksRes.data);
+
+      const borrowedBooks = await axios.get(`${baseURLBook}/requests`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (borrowedBooks.status === 200) {
+        setBorrowedBooks(borrowedBooks.data);
+      }
     } catch (error) {
       console.error("Error fetching books:", error);
       setError(t("error-fetching-data"));
@@ -65,10 +64,35 @@ const Dashboard = () => {
   useEffect(() => {
     fetchBooks();
     setCategories(jsonCategories.categories);
-  }, [limit]); // Re-fetch when limit changes
+  }, [limit]);
+
+  const renderSection = (title, books) => {
+    return (
+      <Box sx={{ marginBottom: 4 }}>
+        <Typography variant="h6" gutterBottom sx={{ textAlign: "right" }}>
+          {title}
+        </Typography>
+        {books.length === 0 ? (
+          <Alert
+            severity="warning"
+            sx={{
+              textAlign: "right",
+              direction: "rtl",
+              fontSize: "1rem",
+              gap: 1,
+            }}
+          >
+            {t("no-books-available")}
+          </Alert>
+        ) : (
+          <BooksList books={books} />
+        )}
+      </Box>
+    );
+  };
 
   return (
-    <Box>
+    <Box sx={{ marginBottom: 4 }}>
       <Categories categories={categories} />
       <Container>
         {error && (
@@ -79,36 +103,10 @@ const Dashboard = () => {
             onClose={() => setError(null)}
           />
         )}
-        {/* Limit Picker */}
-        {/* <FormControl fullWidth sx={{ marginBottom: 2 }}>
-          <InputLabel id="limit-label">{t("select-limit")}</InputLabel>
-          <Select
-            labelId="limit-label"
-            value={limit}
-            onChange={(e) => setLimit(e.target.value)}
-          >
-            {[5, 10, 15, 20].map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl> */}
 
-        <Typography variant="h6" gutterBottom>
-          {t("book-recommendations")}
-        </Typography>
-        <BooksList books={recommendedBooks} />
-
-        <Typography variant="h6" gutterBottom sx={{ marginTop: 4 }}>
-          {t("donated-books")}
-        </Typography>
-        <BooksList books={donatedBooks} />
-
-        <Typography variant="h6" gutterBottom sx={{ marginTop: 4 }}>
-          {t("borrowed-books")}
-        </Typography>
-        <BooksList books={borrowedBooks} />
+        {renderSection(t("book-recommendations"), recommendedBooks)}
+        {renderSection(t("donated-books"), donatedBooks)}
+        {renderSection(t("borrowed-books"), borrowedBooks)}
       </Container>
     </Box>
   );
