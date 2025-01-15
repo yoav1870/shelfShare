@@ -20,10 +20,22 @@ const getRecommendations = async (userId) => {
         { author: { $in: favoriteAuthors || [] } },
       ],
     }).select("title genre author");
+    const recommendedBookIds = recommendedBooks.map((book) =>
+      book._id.toString()
+    );
 
-    return recommendedBooks;
+    const allBooks = await Book.find().select("title genre author");
+    const nonRecommendedBooks = allBooks.filter(
+      (book) => !recommendedBookIds.includes(book._id.toString())
+    );
+
+    const combinedBooks = [...recommendedBooks, ...nonRecommendedBooks];
+
+    return combinedBooks;
   } catch (err) {
     console.error("Error in recommendation service:", err);
     throw err;
   }
 };
+
+module.exports = { getRecommendations };

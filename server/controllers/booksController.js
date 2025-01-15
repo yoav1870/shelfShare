@@ -1,5 +1,6 @@
 const Book = require("../models/bookModel");
 const { fetchBookDataById } = require("../services/googleBooksService");
+const { getRecommendations } = require("../services/recommendationService");
 
 const booksController = {
   async getAllBooks(req, res) {
@@ -116,6 +117,16 @@ const booksController = {
       });
     } catch (err) {
       res.status(500).json({ error: "Internal server error" + err });
+    }
+  },
+
+  async getRecommendedBooks(req, res) {
+    try {
+      const userId = req.user.id;
+      const books = await getRecommendations(userId);
+      res.status(200).json(books);
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server error" + err });
     }
   },
 };
