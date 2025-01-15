@@ -1,3 +1,4 @@
+const { get } = require("mongoose");
 const Book = require("../models/bookModel");
 const { fetchBookDataById } = require("../services/googleBooksService");
 
@@ -65,6 +66,55 @@ const booksController = {
     } catch (err) {
       console.error("Error searching book by title:", err);
       res.status(500).json({ error: "Internal server error" });
+    }
+  },
+
+  async requestBook(req, res) {
+    try {
+      const { bookId } = req.body;
+      const requesterId = req.user.id;
+      if (!bookId) {
+        return res.status(400).json({ error: "Book ID is required" });
+      }
+      const book = await Book.findById(bookId).populate("donor_refId");
+      if (!book) {
+        return res.status(404).json({ error: "Book not found" });
+      }
+
+      const donorId = book.donor_refId;
+      if (!donorId) {
+        return res
+          .status(400)
+          .json({ error: "Book does not have an associated donor" });
+      }
+
+      const requester = await User.findById(requesterId);
+      if (!requester) {
+        return res.status(404).json({ error: "Requester not found" });
+      }
+
+      const donor = await User.findById(donorId);
+      if (!donor) {
+        return res.status(404).json({ error: "Donor not found" });
+      }
+
+      book.status = "Reserved";
+      await book.save();
+
+      requester.request_history.push({ book: bookId, requestedAt: Date.now() });
+      await requester.save();
+
+      donor.donation_history.push({ book: bookId, donatedAt: Date.now() });
+      await donor.save();
+
+      res.status(200).json({
+        message: "Book successfully added to request and donation histories",
+        requester,
+        donor,
+        bookStatus: book.status,
+      });
+    } catch (err) {
+      res.status(500).json({ error: "Internal server error" + err });
     }
   },
 };

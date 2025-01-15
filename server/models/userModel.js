@@ -6,7 +6,11 @@ const userSchema = new Schema(
     name: { type: String },
     email: { type: String, required: true, unique: true, match: /.+\@.+\..+/ },
     password: { type: String, required: true },
-    preferences: { type: Schema.Types.Mixed, default: {} },
+    preferences: {
+      favoriteGenres: [String],
+      favoriteAuthors: [String],
+      viewedBooks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Book" }],
+    },
     donation_history: [
       {
         book: { type: Schema.Types.ObjectId, ref: "Book" },
