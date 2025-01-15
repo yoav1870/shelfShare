@@ -10,14 +10,11 @@ import {
   Alert,
 } from "@mui/material";
 import axios from "axios";
-import Categories from "../components/Categories";
 import BooksList from "../components/BooksList";
 import CustomAlert from "../components/CustomAlert";
-import jsonCategories from "../tools/categories.json";
 import { t } from "../tools/utils";
 
 const Dashboard = () => {
-  const [categories, setCategories] = useState([]);
   const [recommendedBooks, setRecommendedBooks] = useState([]);
   const [donatedBooks, setDonatedBooks] = useState([]);
   const [borrowedBooks, setBorrowedBooks] = useState([]);
@@ -27,43 +24,41 @@ const Dashboard = () => {
   const fetchBooks = async () => {
     try {
       const token = localStorage.getItem("token");
-      const baseURLBook = `${import.meta.env.VITE_SERVER_URI}/api/user`;
+      const baseURLBook = `${import.meta.env.VITE_SERVER_URI}/api/books`;
 
-      // const recommendedBooks = await axios.get(
-      //   `${baseURLBook}/recommendations`,
-      //   {
-      //     headers: { Authorization: `Bearer ${token}` },
-      //   }
-      // );
+      const recommendedBooks = await axios.get(`${baseURLBook}/recommended`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (recommendedBooks.status === 200) {
+        const recommendedArray = Array.isArray(recommendedBooks.data)
+          ? recommendedBooks.data
+          : [recommendedBooks.data];
 
-      // if (recommendedBooks.status === 200) {
-      //   setRecommendedBooks(recommendedBooks.data);
+        setRecommendedBooks(recommendedArray);
+      }
+
+      // const donatedBooks = await axios.get(`${baseURLBook}/donations`, {
+      //   headers: { Authorization: `Bearer ${token}` },
+      // });
+
+      // if (donatedBooks.status === 200) {
+      //   setDonatedBooks(donatedBooks.data);
       // }
 
-      const donatedBooks = await axios.get(`${baseURLBook}/donations`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // const borrowedBooks = await axios.get(`${baseURLBook}/requests`, {
+      //   headers: { Authorization: `Bearer ${token}` },
+      // });
 
-      if (donatedBooks.status === 200) {
-        setDonatedBooks(donatedBooks.data);
-      }
-
-      const borrowedBooks = await axios.get(`${baseURLBook}/requests`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (borrowedBooks.status === 200) {
-        setBorrowedBooks(borrowedBooks.data);
-      }
+      // if (borrowedBooks.status === 200) {
+      //   setBorrowedBooks(borrowedBooks.data);
+      // }
     } catch (error) {
-      console.error("Error fetching books:", error);
       setError(t("error-fetching-data"));
     }
   };
 
   useEffect(() => {
     fetchBooks();
-    setCategories(jsonCategories.categories);
   }, [limit]);
 
   const renderSection = (title, books) => {
@@ -93,7 +88,6 @@ const Dashboard = () => {
 
   return (
     <Box sx={{ marginBottom: 4 }}>
-      <Categories categories={categories} />
       <Container>
         {error && (
           <CustomAlert

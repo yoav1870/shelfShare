@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   TextField,
@@ -13,15 +13,24 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { useTheme } from "@mui/material/styles";
+import jsonCategories from "../tools/categories.json";
+import Categories from "../components/Categories";
 import { t } from "../tools/utils";
 
 const Search = () => {
   const theme = useTheme();
+  const [categories, setCategories] = useState([]);
+  const [books, setBooks] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
+
+  useEffect(() => {
+    // fetchBooks();
+    setCategories(jsonCategories.categories);
+  }, []);
 
   return (
     <Box
@@ -58,6 +67,7 @@ const Search = () => {
           <SearchIcon />
         </IconButton>
       </Box>
+      <Categories categories={categories} />
 
       <Box>
         {/* {books.map((book, index) => (
