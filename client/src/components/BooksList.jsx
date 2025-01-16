@@ -10,7 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import axios from "axios";
-import CustomAlert from "./CustomAlert";
+import CustomAlert from "../components/CustomAlert";
 
 const BooksList = ({ books = [], showActionButton = true }) => {
   const navigate = useNavigate();
@@ -33,7 +33,6 @@ const BooksList = ({ books = [], showActionButton = true }) => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
       if (res.status === 201) {
         setBorrowedBooks((prev) => [...prev, book._id]);
         setAlert({
@@ -107,7 +106,7 @@ const BooksList = ({ books = [], showActionButton = true }) => {
                     variant="outlined"
                     sx={{ marginTop: 2 }}
                     onClick={(e) => {
-                      e.stopPropagation(); // Prevents the card click event
+                      e.stopPropagation();
                       handleBorrowRequest(book);
                     }}
                   >
