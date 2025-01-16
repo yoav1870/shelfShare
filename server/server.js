@@ -12,7 +12,6 @@ const { booksRouter } = require("./routers/booksRouter");
 const { userRouter } = require("./routers/userRouter");
 const { reviewRouter } = require("./routers/reviewRouter");
 
-generateNBooks(10);
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 

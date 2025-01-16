@@ -48,9 +48,9 @@ const fetchBookDataById = async (title) => {
   }
 };
 
-const generateNBooks = async (amount) => {
+const generateNBooks = async (amount, userId) => {
   const MAX_BOOKS_AMOUNT = 10;
-  let booksAmount = amount > 0 ? Math.min(amount, 40) : MAX_BOOKS_AMOUNT;
+  const booksAmount = amount > 0 ? Math.min(amount, 40) : MAX_BOOKS_AMOUNT;
   const query = encodeURIComponent("bestsellers");
 
   if (!process.env.BOOKS_API_KEY) {
@@ -71,9 +71,41 @@ const generateNBooks = async (amount) => {
     }
 
     const data = await response.json();
-    return data;
+
+    if (data.items && data.items.length > 0) {
+      const books = data.items.map((item) => {
+        const bookData = item.volumeInfo;
+        return {
+          title: bookData.title || "Unknown",
+          author: bookData.authors ? bookData.authors.join(", ") : "Unknown",
+          genre: bookData.categories
+            ? bookData.categories.join(", ")
+            : "Uncategorized",
+          donor_refId: userId,
+          status: "Available",
+          state: "new",
+          pics: [],
+          location: "Not specified",
+          metadata: {
+            description: bookData.description || "No description available.",
+            publisher: bookData.publisher || "Unknown",
+            publishedDate: bookData.publishedDate || "Unknown",
+            pageCount: bookData.pageCount || 0,
+            thumbnail: bookData.imageLinks
+              ? bookData.imageLinks.thumbnail
+              : null,
+          },
+        };
+      });
+
+      return books;
+    } else {
+      console.error("No books found for the query.");
+      return [];
+    }
   } catch (err) {
-    console.error("Error in generateBookData:", err.message);
+    console.error("Error in generateNBooks:", err.message);
+    throw err;
   }
 };
 
