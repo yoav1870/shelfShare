@@ -136,11 +136,9 @@ const booksController = {
       const books = await getRecommendations(userId);
 
       if (books.length === 0) {
-        // return res.status(404).json({ message: "No books available" });
-        const generatedBooks = await generateNBooks(5);
-        generatedBooks["isGenerated"] = true;
-        return res.status(200).json(generatedBooks);
-      } else res.status(200).json(books);
+        return res.status(404).json({ message: "No books available" });
+      }
+      res.status(200).json(books);
     } catch (err) {
       res.status(500).json({ error: "Internal server error: " + err.message });
     }
