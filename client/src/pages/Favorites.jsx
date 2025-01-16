@@ -3,57 +3,35 @@ import {
   Box,
   Container,
   Typography,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
   Alert,
+  Grid,
+  Card,
+  CardContent,
+  CardMedia,
+  Button,
 } from "@mui/material";
 import axios from "axios";
 import Categories from "../components/Categories";
-import BooksList from "../components/BooksList";
 import CustomAlert from "../components/CustomAlert";
 import jsonCategories from "../tools/categories.json";
 import { t } from "../tools/utils";
 
 const Favorites = () => {
   const [categories, setCategories] = useState([]);
-  const [recommendedBooks, setRecommendedBooks] = useState([]);
-  const [donatedBooks, setDonatedBooks] = useState([]);
-  const [borrowedBooks, setBorrowedBooks] = useState([]);
+  const [books, setBooks] = useState([]);
   const [error, setError] = useState(null);
-  const [limit, setLimit] = useState(10);
 
   const fetchBooks = async () => {
     try {
       const token = localStorage.getItem("token");
-      const baseURLBook = `${import.meta.env.VITE_SERVER_URI}/api/user`;
+      const baseURLBook = `${import.meta.env.VITE_SERVER_URI}/api/books`;
 
-      // const recommendedBooks = await axios.get(
-      //   `${baseURLBook}/recommendations`,
-      //   {
-      //     headers: { Authorization: `Bearer ${token}` },
-      //   }
-      // );
-
-      // if (recommendedBooks.status === 200) {
-      //   setRecommendedBooks(recommendedBooks.data);
-      // }
-
-      const donatedBooks = await axios.get(`${baseURLBook}/donations`, {
+      const response = await axios.get(baseURLBook, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (donatedBooks.status === 200) {
-        setDonatedBooks(donatedBooks.data);
-      }
-
-      const borrowedBooks = await axios.get(`${baseURLBook}/requests`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (borrowedBooks.status === 200) {
-        setBorrowedBooks(borrowedBooks.data);
+      if (response.status === 200) {
+        setBooks(response.data);
       }
     } catch (error) {
       console.error("Error fetching books:", error);
@@ -64,30 +42,35 @@ const Favorites = () => {
   useEffect(() => {
     fetchBooks();
     setCategories(jsonCategories.categories);
-  }, [limit]);
+  }, []);
 
-  const renderSection = (title, books) => {
+  const renderBooks = (books) => {
     return (
-      <Box sx={{ marginBottom: 4 }}>
-        <Typography variant="h6" gutterBottom sx={{ textAlign: "right" }}>
-          {title}
-        </Typography>
-        {books.length === 0 ? (
-          <Alert
-            severity="warning"
-            sx={{
-              textAlign: "right",
-              direction: "rtl",
-              fontSize: "1rem",
-              gap: 1,
-            }}
-          >
-            {t("no-books-available")}
-          </Alert>
-        ) : (
-          <BooksList books={books} />
-        )}
-      </Box>
+      <Grid container spacing={4}>
+        {books.map((book) => (
+          <Grid item xs={12} sm={6} md={4} key={book.id}>
+            <Card>
+              <CardMedia
+                component="img"
+                height="200"
+                image={book.image || "placeholder.jpg"}
+                alt={book.title}
+              />
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  {book.title}
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                  {book.author}
+                </Typography>
+                <Button variant="outlined" color="primary" sx={{ marginTop: 2 }}>
+                  {t("view-details")}
+                </Button>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
     );
   };
 
@@ -104,9 +87,17 @@ const Favorites = () => {
           />
         )}
 
-        {renderSection(t("book-recommendations"), recommendedBooks)}
-        {renderSection(t("donated-books"), donatedBooks)}
-        {renderSection(t("borrowed-books"), borrowedBooks)}
+        <Typography variant="h5" gutterBottom sx={{ textAlign: "center" }}>
+          {t("all-books")}
+        </Typography>
+
+        {books.length === 0 ? (
+          <Alert severity="warning" sx={{ textAlign: "center", fontSize: "1rem", gap: 1 }}>
+            {t("no-books-available")}
+          </Alert>
+        ) : (
+          renderBooks(books)
+        )}
       </Container>
     </Box>
   );

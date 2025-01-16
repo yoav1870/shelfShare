@@ -7,6 +7,7 @@ import { Box } from "@mui/material";
 import AddBookForm from "./pages/AddBookForm";
 import Search from "./pages/Search";
 import BookDetails from "./pages/BookDetails";
+import Favorites from "./pages/Favorites";
 
 const App = () => {
   return (
@@ -37,7 +38,7 @@ const App = () => {
             path="/favorites"
             element={
               <ProtectedRoute>
-                <ProfilePage />
+                <Favorites/>
               </ProtectedRoute>
             }
           />
