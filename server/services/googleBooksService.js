@@ -48,4 +48,33 @@ const fetchBookDataById = async (title) => {
   }
 };
 
-module.exports = { fetchBookDataById };
+const generateNBooks = async (amount) => {
+  const MAX_BOOKS_AMOUNT = 10;
+  let booksAmount = amount > 0 ? Math.min(amount, 40) : MAX_BOOKS_AMOUNT;
+  const query = encodeURIComponent("bestsellers");
+
+  if (!process.env.BOOKS_API_KEY) {
+    console.error(
+      "API key is missing. Please set BOOKS_API_KEY in your environment variables."
+    );
+    throw new Error("API key is missing");
+  }
+
+  const url = `https://www.googleapis.com/books/v1/volumes?q=${query}&orderBy=relevance&maxResults=${booksAmount}&key=${process.env.BOOKS_API_KEY}`;
+
+  try {
+    const fetch = (await import("node-fetch")).default;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    console.error("Error in generateBookData:", err.message);
+  }
+};
+
+module.exports = { fetchBookDataById, generateNBooks };

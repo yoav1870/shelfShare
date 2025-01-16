@@ -12,16 +12,22 @@ const getRecommendations = async (userId) => {
     const { favoriteGenres = [], favoriteAuthors = [] } = user.preferences;
 
     const recommendedBooks = await Book.find({
-      $or: [
-        { genre: { $in: favoriteGenres } },
-        { author: { $in: favoriteAuthors } },
+      $and: [
+        {
+          $or: [
+            { genre: { $in: favoriteGenres } },
+            { author: { $in: favoriteAuthors } },
+          ],
+        },
+        { donor_refId: { $ne: userId } },
       ],
     }).limit(5);
 
     if (recommendedBooks.length < 5) {
-      const fallbackBooks = await Book.find().limit(
-        5 - recommendedBooks.length
-      );
+      const fallbackBooks = await Book.find({
+        donor_refId: { $ne: userId },
+      }).limit(5 - recommendedBooks.length);
+
       const allRecommendedBooks = recommendedBooks.concat(fallbackBooks);
       return allRecommendedBooks;
     }

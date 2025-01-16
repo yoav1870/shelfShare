@@ -3,6 +3,8 @@ require("./config/db");
 const cors = require("cors");
 const { authMiddleware } = require("./middleware/auth");
 
+const { generateNBooks } = require("./services/googleBooksService");
+
 const app = express();
 
 const { authRouter } = require("./routers/authRouter");
@@ -10,6 +12,7 @@ const { booksRouter } = require("./routers/booksRouter");
 const { userRouter } = require("./routers/userRouter");
 const { reviewRouter } = require("./routers/reviewRouter");
 
+generateNBooks(10);
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
