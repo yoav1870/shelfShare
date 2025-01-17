@@ -6,28 +6,30 @@ import CloseIcon from "@mui/icons-material/Close";
 import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import axios from "axios";
+import CustomAlert from "../components/CustomAlert";
 
 const ReviewSection = ({ bookId }) => {
   const [showReviewInput, setShowReviewInput] = useState(false);
   const [newReview, setNewReview] = useState("");
   const [selectedStars, setSelectedStars] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const [alert, setAlert] = useState({
+    open: false,
+    message: "",
+    severity: "",
+  });
 
   const handleStarChange = (starValue) => {
     setSelectedStars(starValue);
   };
 
   const handleAddReview = async () => {
-    setReviews((prevReviews) => [
-      { text: newReview, rating: selectedStars },
-      ...prevReviews,
-    ]);
     if (newReview.trim() && selectedStars) {
       try {
         const token = localStorage.getItem("token");
         const baseURLBook = `${import.meta.env.VITE_SERVER_URI}/api/review`;
 
-        const res = await axios.put(
+        const res = await axios.post(
           `${baseURLBook}`,
           { bookId, review_text: newReview, rating: selectedStars },
           {
@@ -35,17 +37,33 @@ const ReviewSection = ({ bookId }) => {
           }
         );
 
-        if (res.status === 200) {
+        if (res.status === 201) {
           setReviews((prevReviews) => [
             { text: newReview, rating: selectedStars },
             ...prevReviews,
           ]);
           setNewReview("");
           setSelectedStars(null);
+          setAlert({
+            open: true,
+            message: "Review added successfully.",
+            severity: "success",
+          });
+          setShowReviewInput(false);
         }
       } catch (error) {
-        console.error("Failed to add review");
+        setAlert({
+          open: true,
+          message: "server error",
+          severity: "error",
+        });
       }
+    } else {
+      setAlert({
+        open: true,
+        message: "Please provide a review and rating.",
+        severity: "error",
+      });
     }
   };
 
@@ -168,6 +186,12 @@ const ReviewSection = ({ bookId }) => {
           No review history available.
         </Typography>
       )}
+      <CustomAlert
+        open={alert.open}
+        message={alert.message}
+        severity={alert.severity}
+        onClose={() => setAlert({ open: false, message: "", severity: "" })}
+      />
     </>
   );
 };

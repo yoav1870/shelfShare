@@ -1,8 +1,7 @@
 import { Box, Container, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import PropTypes from "prop-types";
 
-const Categories = ({ categories, onCategorySelect }) => {
+const Categories = ({ categories, onCategorySelect, selectedCategory }) => {
   const theme = useTheme();
 
   return (
@@ -30,6 +29,10 @@ const Categories = ({ categories, onCategorySelect }) => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                backgroundColor:
+                  selectedCategory === category.value
+                    ? theme.palette.primary.light
+                    : "transparent",
               }}
             >
               <Typography variant="h5">{category.icon}</Typography>

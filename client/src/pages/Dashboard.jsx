@@ -19,12 +19,11 @@ const Dashboard = () => {
   const [donatedBooks, setDonatedBooks] = useState([]);
   const [borrowedBooks, setBorrowedBooks] = useState([]);
   const [error, setError] = useState(null);
-  const [limit, setLimit] = useState(10);
 
   const fetchBooks = async () => {
     try {
       const token = localStorage.getItem("token");
-      const baseURLBook = `${import.meta.env.VITE_SERVER_URI}/api/books`;
+      let baseURLBook = `${import.meta.env.VITE_SERVER_URI}/api/books`;
 
       const recommendedBooks = await axios.get(`${baseURLBook}/recommended`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -37,31 +36,35 @@ const Dashboard = () => {
         setRecommendedBooks(recommendedArray);
       }
 
-      // const donatedBooks = await axios.get(`${baseURLBook}/donations`, {
-      //   headers: { Authorization: `Bearer ${token}` },
-      // });
+      baseURLBook = `${import.meta.env.VITE_SERVER_URI}/api/user`;
+      const donatedBooks = await axios.get(`${baseURLBook}/donations`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-      // if (donatedBooks.status === 200) {
-      //   setDonatedBooks(donatedBooks.data);
-      // }
+      if (donatedBooks.status === 200) {
+        setDonatedBooks(donatedBooks.data);
+      }
 
-      // const borrowedBooks = await axios.get(`${baseURLBook}/requests`, {
-      //   headers: { Authorization: `Bearer ${token}` },
-      // });
+      const borrowedBooks = await axios.get(`${baseURLBook}/requests`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-      // if (borrowedBooks.status === 200) {
-      //   setBorrowedBooks(borrowedBooks.data);
-      // }
+      if (borrowedBooks.status === 200) {
+        setBorrowedBooks(borrowedBooks.data);
+      }
     } catch (error) {
       setError(t("error-fetching-data"));
     }
   };
 
+  const handleBookBorrowed = (book) => {
+    setBorrowedBooks((prev) => [...prev, book]);
+  };
   useEffect(() => {
     fetchBooks();
-  }, [limit]);
+  }, []);
 
-  const renderSection = (title, books) => {
+  const renderSection = (title, books, sectionName) => {
     return (
       <Box sx={{ marginBottom: 4 }}>
         <Typography variant="h6" gutterBottom sx={{ textAlign: "right" }}>
@@ -80,7 +83,14 @@ const Dashboard = () => {
             {t("no-books-available")}
           </Alert>
         ) : (
-          <BooksList books={books} />
+          <BooksList
+            books={books}
+            direction="row"
+            showActionButton={
+              sectionName ? sectionName === "recommendations" : true
+            }
+            onBookBorrowed={handleBookBorrowed}
+          />
         )}
       </Box>
     );
@@ -98,9 +108,13 @@ const Dashboard = () => {
           />
         )}
 
-        {renderSection(t("book-recommendations"), recommendedBooks)}
-        {renderSection(t("donated-books"), donatedBooks)}
-        {renderSection(t("borrowed-books"), borrowedBooks)}
+        {renderSection(
+          t("book-recommendations"),
+          recommendedBooks,
+          "recommendations"
+        )}
+        {renderSection(t("donated-books"), donatedBooks, "donated")}
+        {renderSection(t("borrowed-books"), borrowedBooks, "borrowed")}
       </Container>
     </Box>
   );

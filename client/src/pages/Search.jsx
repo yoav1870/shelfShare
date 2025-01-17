@@ -14,6 +14,7 @@ const Search = () => {
   const [categories, setCategories] = useState([]);
   const [books, setBooks] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [alert, setAlert] = useState({
     open: false,
     message: "",
@@ -23,7 +24,7 @@ const Search = () => {
   const fetchBooks = async (query, isCategory = false) => {
     const token = localStorage.getItem("token");
     const baseURLBook = `${import.meta.env.VITE_SERVER_URI}/api/books`;
-    const endpoint = isCategory ? `/category/${query}` : `/${query}`;
+    const endpoint = isCategory ? `/genre/${query}` : `/${query}`;
 
     try {
       const response = await axios.get(`${baseURLBook}${endpoint}`, {
@@ -36,14 +37,14 @@ const Search = () => {
         setBooks([]);
         setAlert({
           open: true,
-          message: t("no-books-available"),
+          message: "No books found",
           severity: "warning",
         });
       }
     } catch (error) {
       setAlert({
         open: true,
-        message: t("server-error."),
+        message: "server error",
         severity: "error",
       });
     }
@@ -54,7 +55,13 @@ const Search = () => {
   };
 
   const handleCategoryClick = (category) => {
+    setSelectedCategory(category);
     fetchBooks(category, true);
+  };
+
+  const handleSearchClick = () => {
+    setSelectedCategory(null);
+    fetchBooks(searchQuery);
   };
 
   const handleCloseAlert = () => {
@@ -96,13 +103,14 @@ const Search = () => {
             sx: { padding: 1, direction: "rtl" },
           }}
         />
-        <IconButton color="primary" onClick={() => fetchBooks(searchQuery)}>
+        <IconButton color="primary" onClick={handleSearchClick}>
           <SearchIcon />
         </IconButton>
       </Box>
       <Categories
         categories={categories}
         onCategorySelect={handleCategoryClick}
+        selectedCategory={selectedCategory}
       />
       <BooksList books={books} showActionButton={true} />
       <CustomAlert
