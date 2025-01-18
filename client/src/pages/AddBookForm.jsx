@@ -19,7 +19,6 @@ import CustomAlert from "../components/CustomAlert";
 
 const AddBookForm = () => {
   const theme = useTheme();
-
   const [formData, setFormData] = useState({
     title: "",
     state: "",
@@ -31,7 +30,6 @@ const AddBookForm = () => {
     more: "",
     cityOptions: [],
   });
-
   const [alert, setAlert] = useState({
     open: false,
     message: "",
@@ -184,6 +182,7 @@ const AddBookForm = () => {
         onChange={handleChange}
         required
         fullWidth
+        direction="rtl"
       />
       <FormControl fullWidth margin="normal" required>
         <InputLabel>{t("state")}</InputLabel>
