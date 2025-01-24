@@ -44,7 +44,7 @@ const authController = {
         return res.status(401).json({ message: "Invalid email or password" });
       }
       const token = generateToken(user._id, user.isAdmin);
-      res.json({ token });
+      res.json({ token, isAdmin: user.isAdmin });
     } catch (err) {
       res.status(400).json({ message: "Error logging in", error: err.message });
     }
