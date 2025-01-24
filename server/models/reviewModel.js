@@ -7,6 +7,7 @@ const reviewSchema = new Schema(
     rating: { type: Number, required: true, min: 1, max: 5 },
     review_text: { type: String, default: "" },
     date: { type: Date, default: Date.now },
+    susReview: { type: Boolean, default: false },
   },
   { collection: "reviews" }
 );

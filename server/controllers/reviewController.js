@@ -1,6 +1,7 @@
 const Review = require("../models/reviewModel");
 const Book = require("../models/bookModel");
 const User = require("../models/userModel");
+const { containsBadWords } = require("../utils/tools");
 
 const reviewController = {
   async addReview(req, res) {
@@ -25,11 +26,14 @@ const reviewController = {
           .status(400)
           .json({ error: "You have already reviewed this book" });
       }
+      const susReview = containsBadWords(review_text);
+
       const review = new Review({
         book_refId: bookId,
         user_refId: userId,
         rating,
         review_text,
+        susReview,
       });
       await review.save();
       await updateBookRating(bookId);

@@ -4,11 +4,14 @@ import AppTop from "./AppTop";
 import Footer from "./Footer";
 import { Box } from "@mui/material";
 
-const ProtectedRoute = ({ children }) => {
-  //TODO: Implement
+const ProtectedRoute = ({ children, admin }) => {
   const token = localStorage.getItem("token");
-
   if (!token) {
+    return <Navigate to="/login" />;
+  }
+  const payload = JSON.parse(atob(token.split(".")[1]));
+  const isAdmin = payload.isAdmin;
+  if (admin && !isAdmin) {
     return <Navigate to="/login" />;
   }
   return (
@@ -22,6 +25,7 @@ const ProtectedRoute = ({ children }) => {
 
 ProtectedRoute.propTypes = {
   children: PropTypes.node.isRequired,
+  admin: PropTypes.bool,
 };
 
 export default ProtectedRoute;

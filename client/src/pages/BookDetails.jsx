@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -11,13 +11,14 @@ import {
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import CustomAlert from "../components/CustomAlert";
-import ReviewSection from "../components/ReviewSection"; // Import the new component
+import ReviewSection from "../components/ReviewSection";
 
 const BookDetails = () => {
   const location = useLocation();
+  const { id: bookId } = useParams();
   const navigate = useNavigate();
   const theme = useTheme();
   const { book } = location.state || {};
@@ -104,7 +105,26 @@ const BookDetails = () => {
     });
     navigate(-1);
   }
+  // useEffect(() => {
+  //   const fetchBookDetails = async () => {
+  //     try {
+  //       const token = localStorage.getItem("token");
+  //       const baseURLBook = `${
+  //         import.meta.env.VITE_SERVER_URI
+  //       }/api/books/${bookId}`;
 
+  //       const res = await axios.get(baseURLBook, {
+  //         headers: { Authorization: `Bearer ${token}` },
+  //       });
+  //       setBook(res.data);
+  //       // setAddedToFavorites(res.data.isFavorite); // Assuming the API provides this info
+  //     } catch (err) {
+  //       // setError("Failed to load book details.");
+  //     }
+  //   };
+
+  //   fetchBookDetails();
+  // }, [bookId]);
   return (
     <>
       <Box sx={{ maxWidth: 800, margin: "0 auto", padding: 4 }}>

@@ -59,7 +59,6 @@ const RegisterForm = ({ onSwitch }) => {
         formData
       );
       if (res.status === 201) {
-        console.log("Registration Successful:", res.data);
         onSwitch("login");
       }
     } catch (error) {

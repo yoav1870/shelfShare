@@ -105,7 +105,6 @@ const AddBookForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Data:", formData);
 
     if (!formData.title || !formData.state) {
       setAlert({

@@ -48,9 +48,13 @@ const LoginForm = ({ onSwitch }) => {
         formData
       );
       if (res.status === 200) {
-        console.log("Login Successful:", res.data);
-        localStorage.setItem("token", res.data.token);
-        navigate("/my-books");
+        const { token, isAdmin } = res.data;
+        localStorage.setItem("token", token);
+        if (isAdmin) {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/my-books");
+        }
       }
     } catch (error) {
       setLocalError(error.response?.data?.message || error.message);
