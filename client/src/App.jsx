@@ -7,7 +7,9 @@ import { Box } from "@mui/material";
 import AddBookForm from "./pages/AddBookForm";
 import Search from "./pages/Search";
 import BookDetails from "./pages/BookDetails";
+import Favorites from "./pages/Favorites";
 import AdminDashboard from "./pages/AdminDashboard";
+
 
 const App = () => {
   return (
@@ -38,6 +40,14 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/favorites"
+            element={
+              <ProtectedRoute>
+                <Favorites/>
               </ProtectedRoute>
             }
           />
