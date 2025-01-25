@@ -6,6 +6,7 @@ const userSchema = new Schema(
     name: { type: String },
     email: { type: String, required: true, unique: true, match: /.+\@.+\..+/ },
     password: { type: String, required: true },
+    isAdmin: { type: Boolean, default: false },
     preferences: {
       favoriteGenres: [String],
       favoriteAuthors: [String],
@@ -23,8 +24,10 @@ const userSchema = new Schema(
         requestedAt: { type: Date, default: Date.now },
       },
     ],
+    liked_books: [{ type: Schema.Types.ObjectId, ref: "Book" }],
+    fcmToken: { type: String },
   },
-  { collection: "users" }
+  { collection: "users", timestamps: true }
 );
 
 userSchema.pre("save", async function (next) {

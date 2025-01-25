@@ -8,6 +8,8 @@ import AddBookForm from "./pages/AddBookForm";
 import Search from "./pages/Search";
 import BookDetails from "./pages/BookDetails";
 import Favorites from "./pages/Favorites";
+import AdminDashboard from "./pages/AdminDashboard";
+
 
 const App = () => {
   return (
@@ -17,7 +19,14 @@ const App = () => {
       >
         <Routes>
           <Route path="/login" element={<Login />} />
-
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedRoute admin>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/my-books"
             element={

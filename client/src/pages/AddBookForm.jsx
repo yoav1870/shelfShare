@@ -19,7 +19,6 @@ import CustomAlert from "../components/CustomAlert";
 
 const AddBookForm = () => {
   const theme = useTheme();
-
   const [formData, setFormData] = useState({
     title: "",
     state: "",
@@ -31,7 +30,6 @@ const AddBookForm = () => {
     more: "",
     cityOptions: [],
   });
-
   const [alert, setAlert] = useState({
     open: false,
     message: "",
@@ -107,7 +105,6 @@ const AddBookForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Data:", formData);
 
     if (!formData.title || !formData.state) {
       setAlert({
@@ -184,6 +181,7 @@ const AddBookForm = () => {
         onChange={handleChange}
         required
         fullWidth
+        direction="rtl"
       />
       <FormControl fullWidth margin="normal" required>
         <InputLabel>{t("state")}</InputLabel>

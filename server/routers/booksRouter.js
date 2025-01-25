@@ -3,10 +3,15 @@ const { booksController } = require("../controllers/booksController");
 
 const booksRouter = new Router();
 
-booksRouter.get("/", booksController.getAllBooks);
+booksRouter.get("/liked", booksController.getLikedBooks);
+booksRouter.get("/recommended", booksController.getRecommendedBooks);
+booksRouter.get("/genre/:genre", booksController.searchBookByGenre);
 booksRouter.get("/:title", booksController.searchBookByTitle);
-// booksRouter.get("/genre/:genre", booksController.getRecommendedBooks);
+booksRouter.get("/", booksController.getAllBooks);
+booksRouter.get("/details/:bookId", booksController.getBookDetails);
 
+booksRouter.put("/like/:bookId", booksController.likeBook);
+booksRouter.put("/unlike/:bookId", booksController.unlikeBook);
 booksRouter.post("/request", booksController.requestBook);
 booksRouter.post("/", booksController.addBook);
 

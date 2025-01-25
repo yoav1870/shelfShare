@@ -1,5 +1,13 @@
+const { get } = require("mongoose");
 const Book = require("../models/bookModel");
-const { fetchBookDataById } = require("../services/googleBooksService");
+const User = require("../models/userModel");
+const {
+  fetchBookDataById,
+  generateNBooks,
+} = require("../services/googleBooksService");
+const { getRecommendations } = require("../services/recommendationService");
+const Review = require("../models/reviewModel");
+const admin = require("../config/firebaseAdmin");
 
 const booksController = {
   async getAllBooks(req, res) {
@@ -44,6 +52,45 @@ const booksController = {
         },
       });
       await book.save();
+      if (book.status !== "Available") {
+        return res.status(201).json({ message: "Book added successfully." });
+      }
+
+      const usersToNotify = await User.find()
+        .populate({
+          path: "liked_books",
+          match: { title: book.title },
+        })
+        .exec();
+      console.log("@@@@@@@@@@@@@@@@@@@@@ START @@@@@@@@@@@@@@@@@@@@@");
+      console.log("usersToNotify", usersToNotify);
+      const filteredUsers = usersToNotify.filter(
+        (user) => user.liked_books.length > 0
+      );
+      console.log("filteredUsers", filteredUsers);
+      console.log("@@@@@@@@@@@@@@@@@@@@@ END @@@@@@@@@@@@@@@@@@@@@");
+
+      for (const user of filteredUsers) {
+        if (user.fcmToken) {
+          const message = {
+            notification: {
+              title: "Book Available!",
+              body: `A book titled "${book.title}" is now available.`,
+            },
+            token: user.fcmToken,
+          };
+
+          try {
+            await admin.messaging().send(message);
+            console.log(`Notification sent to ${user.email}`);
+          } catch (err) {
+            console.error(
+              `Error sending notification to ${user.email}:`,
+              err.message
+            );
+          }
+        }
+      }
       res.status(201).json("Book added successfully");
     } catch (err) {
       console.error("Error adding book:", err);
@@ -116,6 +163,172 @@ const booksController = {
       });
     } catch (err) {
       res.status(500).json({ error: "Internal server error" + err });
+    }
+  },
+
+  async getRecommendedBooks(req, res) {
+    try {
+      const userId = req.user?.id;
+
+      if (!userId) {
+        return res.status(400).json({ error: "User ID is required" });
+      }
+
+      const books = await getRecommendations(userId);
+
+      if (books.length === 0) {
+        return res.status(404).json({ message: "No books available" });
+      }
+      res.status(200).json(books);
+    } catch (err) {
+      res.status(500).json({ error: "Internal server error: " + err.message });
+    }
+  },
+
+  async likeBook(req, res) {
+    try {
+      const { bookId } = req.params;
+      const userId = req.user?.id;
+
+      if (!bookId) {
+        return res.status(400).json({ error: "Book ID is required" });
+      }
+
+      const book = await Book.findById(bookId);
+      if (!book) {
+        return res.status(404).json({ error: "Book not found" });
+      }
+
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      if (user.liked_books.includes(bookId)) {
+        return res.status(400).json({ error: "Book already liked" });
+      }
+
+      user.liked_books.push(bookId);
+      await user.save();
+      res.status(200).json({ message: "Book liked successfully", user });
+    } catch (err) {
+      res.status(500).json({ error: "Internal server error: " + err.message });
+    }
+  },
+
+  async unlikeBook(req, res) {
+    try {
+      const { bookId } = req.body;
+      const userId = req.user?.id;
+
+      if (!bookId) {
+        return res.status(400).json({ error: "Book ID is required" });
+      }
+
+      const book = await Book.findById(bookId);
+      if (!book) {
+        return res.status(404).json({ error: "Book not found" });
+      }
+
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      if (!user.liked_books.includes(bookId)) {
+        return res.status(400).json({ error: "Book not liked" });
+      }
+
+      user.liked_books = user.liked_books.filter((id) => id !== bookId);
+      await user.save();
+      res.status(200).json({ message: "Book unliked successfully", user });
+    } catch (err) {
+      res.status(500).json({ error: "Internal server error: " + err.message });
+    }
+  },
+
+  async getLikedBooks(req, res) {
+    try {
+      const userId = req.user?.id;
+
+      if (!userId) {
+        return res.status(400).json({ error: "User ID is required" });
+      }
+
+      const user = await User.findById(userId).populate("liked_books");
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      res.status(200).json(user.liked_books);
+    } catch (err) {
+      res.status(500).json({ error: "Internal server error: " + err.message });
+    }
+  },
+
+  async searchBookByGenre(req, res) {
+    try {
+      const { genre } = req.params;
+
+      if (!genre) {
+        return res.status(400).json({ error: "Genre is required" });
+      }
+
+      const books = await Book.find({ genre: genre });
+      if (books.length === 0) {
+        return res.status(404).json({ error: "No books found" });
+      }
+
+      res.status(200).json(books);
+    } catch (err) {
+      res.status(500).json({ error: "Internal server error: " + err.message });
+    }
+  },
+  async getBookDetails(req, res) {
+    try {
+      const { bookId } = req.params;
+
+      if (!bookId) {
+        return res.status(400).json({ error: "Book ID is required" });
+      }
+
+      const book = await Book.findById(bookId).populate(
+        "donor_refId",
+        "name email"
+      );
+      if (!book) {
+        return res.status(404).json({ error: "Book not found" });
+      }
+
+      // Fetch reviews for the book
+      const reviews = await Review.find({ book_refId: bookId })
+        .populate("user_refId", "name email")
+        .select("rating review_text date");
+
+      const userId = req.user?.id;
+      const user = userId ? await User.findById(userId) : null;
+      const isFavorite = user ? user.liked_books.includes(bookId) : false;
+
+      res.status(200).json({
+        book: {
+          id: book._id,
+          title: book.title,
+          author: book.author,
+          genre: book.genre,
+          state: book.state,
+          status: book.status,
+          metadata: book.metadata,
+          pics: book.pics,
+          location: book.location,
+          averageRating: book.averageRating,
+          donor: book.donor_refId,
+        },
+        reviews,
+        isFavorite,
+      });
+    } catch (err) {
+      console.error("Error fetching book details:", err);
+      res.status(500).json({ error: "Internal server error: " + err.message });
     }
   },
 };

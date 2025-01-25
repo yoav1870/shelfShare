@@ -40,12 +40,12 @@ const CustomAlert = ({
   );
 };
 
-CustomAlert.propTypes = {
-  open: PropTypes.bool.isRequired,
-  message: PropTypes.string.isRequired,
-  severity: PropTypes.oneOf(["error", "warning", "info", "success"]),
-  onClose: PropTypes.func.isRequired,
-  autoHideDuration: PropTypes.number,
-};
+// CustomAlert.propTypes = {
+//   open: PropTypes.bool.isRequired,
+//   message: PropTypes.string.isRequired,
+//   severity: PropTypes.oneOf(["error", "warning", "info", "success"]),
+//   onClose: PropTypes.func.isRequired,
+//   autoHideDuration: PropTypes.number,
+// };
 
 export default CustomAlert;

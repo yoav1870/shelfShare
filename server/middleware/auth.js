@@ -8,11 +8,18 @@ const authMiddleware = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+
+    req.user = { id: decoded.id };
+    req.isAdmin = decoded.isAdmin;
     next();
   } catch (err) {
     res.status(401).json({ message: "Unauthorized, invalid token" });
   }
 };
-
-module.exports = { authMiddleware };
+const adminMiddleware = (req, res, next) => {
+  if (!req.isAdmin) {
+    return res.status(403).json({ message: "Access forbidden: Admins only" });
+  }
+  next();
+};
+module.exports = { authMiddleware, adminMiddleware };
