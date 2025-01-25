@@ -124,14 +124,12 @@ const userController = {
   },
   async saveFCMToken(req, res) {
     try {
-      console.log("req.body", req.body);
       const { userId, fcmToken } = req.body;
       const user = await User.findById(userId);
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }
       user.fcmToken = fcmToken;
-      console.log("user", user);
       await user.save();
       res.status(200).json({ message: "FCM token saved successfully" });
     } catch (err) {
