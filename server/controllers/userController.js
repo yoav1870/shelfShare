@@ -122,6 +122,23 @@ const userController = {
       res.status(500).json({ error: "Internal server error" });
     }
   },
+  async saveFCMToken(req, res) {
+    try {
+      console.log("req.body", req.body);
+      const { userId, fcmToken } = req.body;
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      user.fcmToken = fcmToken;
+      console.log("user", user);
+      await user.save();
+      res.status(200).json({ message: "FCM token saved successfully" });
+    } catch (err) {
+      console.error("Error saving FCM token:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  },
 };
 
 module.exports = { userController };

@@ -6,6 +6,7 @@ const {
   generateNBooks,
 } = require("../services/googleBooksService");
 const { getRecommendations } = require("../services/recommendationService");
+const Review = require("../models/reviewModel");
 
 const booksController = {
   async getAllBooks(req, res) {
@@ -240,6 +241,53 @@ const booksController = {
 
       res.status(200).json(books);
     } catch (err) {
+      res.status(500).json({ error: "Internal server error: " + err.message });
+    }
+  },
+  async getBookDetails(req, res) {
+    try {
+      const { bookId } = req.params;
+
+      if (!bookId) {
+        return res.status(400).json({ error: "Book ID is required" });
+      }
+
+      const book = await Book.findById(bookId).populate(
+        "donor_refId",
+        "name email"
+      );
+      if (!book) {
+        return res.status(404).json({ error: "Book not found" });
+      }
+
+      // Fetch reviews for the book
+      const reviews = await Review.find({ book_refId: bookId })
+        .populate("user_refId", "name email")
+        .select("rating review_text date");
+
+      const userId = req.user?.id;
+      const user = userId ? await User.findById(userId) : null;
+      const isFavorite = user ? user.liked_books.includes(bookId) : false;
+
+      res.status(200).json({
+        book: {
+          id: book._id,
+          title: book.title,
+          author: book.author,
+          genre: book.genre,
+          state: book.state,
+          status: book.status,
+          metadata: book.metadata,
+          pics: book.pics,
+          location: book.location,
+          averageRating: book.averageRating,
+          donor: book.donor_refId,
+        },
+        reviews,
+        isFavorite,
+      });
+    } catch (err) {
+      console.error("Error fetching book details:", err);
       res.status(500).json({ error: "Internal server error: " + err.message });
     }
   },

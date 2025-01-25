@@ -12,6 +12,8 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { isValidEmail } from "../tools/utils";
+import { jwtDecode } from "jwt-decode";
+import { requestPermission } from "../config/firebase";
 
 const LoginForm = ({ onSwitch }) => {
   const [formData, setFormData] = useState({
@@ -21,6 +23,14 @@ const LoginForm = ({ onSwitch }) => {
   const [error, setLocalError] = useState("");
   const theme = useTheme();
   const navigate = useNavigate();
+
+  const handleLoginSuccess = async (userId) => {
+    try {
+      await requestPermission(userId);
+    } catch (error) {
+      console.error("Error during handleLoginSuccess:", error);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -50,9 +60,16 @@ const LoginForm = ({ onSwitch }) => {
       if (res.status === 200) {
         const { token, isAdmin } = res.data;
         localStorage.setItem("token", token);
+        const decodedToken = jwtDecode(token);
+        const userId = decodedToken?.id;
+        if (!userId) {
+          throw new Error("User ID not found in token.");
+        }
+
         if (isAdmin) {
           navigate("/admin/dashboard");
         } else {
+          await handleLoginSuccess(userId);
           navigate("/my-books");
         }
       }
