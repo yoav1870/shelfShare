@@ -1,11 +1,10 @@
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Box,
   Typography,
   Divider,
   IconButton,
   Button,
-  TextField,
   useTheme,
 } from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -15,75 +14,106 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import CustomAlert from "../components/CustomAlert";
 import ReviewSection from "../components/ReviewSection";
+import BookSpinner from "../components/BookSpinner";
 
 const BookDetails = () => {
-  const location = useLocation();
-  const { id: bookId } = useParams();
+  const { bookId } = useParams();
   const navigate = useNavigate();
   const theme = useTheme();
-  const { book } = location.state || {};
-  const [addedToFavorites, setAddedToFavorites] = useState(false); // TODO: Check if book is in favorites from the db (Idan!!!!!!)
+  const [book, setBook] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [addedToFavorites, setAddedToFavorites] = useState(false);
   const [alert, setAlert] = useState({
     open: false,
     message: "",
     severity: "info",
   });
 
-  const handleAddToFavorites = async (bookId) => {
+  useEffect(() => {
+    const fetchBookData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const baseURL = import.meta.env.VITE_SERVER_URI;
+
+        const response = await axios.get(
+          `${baseURL}/api/books/details/${bookId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (response.status === 200) {
+          const { book, isFavorite, reviews } = response.data;
+          setBook(book);
+          setAddedToFavorites(isFavorite || false);
+          setReviews(reviews);
+        }
+      } catch (error) {
+        console.error("Error fetching book details or reviews:", error);
+        setAlert({
+          open: true,
+          message: "Failed to load book details or reviews.",
+          severity: "error",
+        });
+      }
+    };
+
+    fetchBookData();
+  }, [bookId]);
+
+  const handleAddToFavorites = async () => {
     const token = localStorage.getItem("token");
-    const baseURLBook = `${import.meta.env.VITE_SERVER_URI}/api/books`;
+    const baseURL = import.meta.env.VITE_SERVER_URI;
 
     try {
-      const res = await axios.put(
-        `${baseURLBook}/like/${bookId}`,
-        { bookId },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+      const response = await axios.put(
+        `${baseURL}/api/books/like/${bookId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      if (res.status === 200) {
+      if (response.status === 200) {
         setAddedToFavorites(true);
         setAlert({
           open: true,
-          message: "Added to favorites",
+          message: "Added to favorites.",
           severity: "success",
         });
       }
     } catch (error) {
+      console.error("Failed to add to favorites:", error);
       setAlert({
         open: true,
-        message: "Failed to add to favorites",
+        message: "Failed to add to favorites.",
         severity: "error",
       });
     }
   };
 
-  const handleRemoveFromFavorites = async (bookId) => {
+  const handleRemoveFromFavorites = async () => {
     const token = localStorage.getItem("token");
-    const baseURLBook = `${import.meta.env.VITE_SERVER_URI}/api/books`;
+    const baseURL = import.meta.env.VITE_SERVER_URI;
 
     try {
-      const res = await axios.put(
-        `${baseURLBook}/unlike/${bookId}`,
-        { bookId },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+      const response = await axios.put(
+        `${baseURL}/api/books/unlike/${bookId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      if (res.status === 200) {
+      if (response.status === 200) {
         setAddedToFavorites(false);
         setAlert({
           open: true,
-          message: "Removed from favorites",
+          message: "Removed from favorites.",
           severity: "info",
         });
       }
     } catch (error) {
+      console.error("Failed to remove from favorites:", error);
       setAlert({
         open: true,
-        message: "Failed to remove from favorites",
+        message: "Failed to remove from favorites.",
         severity: "error",
       });
     }
@@ -91,40 +121,15 @@ const BookDetails = () => {
 
   const handleToggleFavorite = () => {
     if (addedToFavorites) {
-      handleRemoveFromFavorites(book._id);
+      handleRemoveFromFavorites();
     } else {
-      handleAddToFavorites(book._id);
+      handleAddToFavorites();
     }
   };
 
   if (!book) {
-    setAlert({
-      open: true,
-      message: "Book not found",
-      severity: "error",
-    });
-    navigate(-1);
+    return <BookSpinner />;
   }
-  // useEffect(() => {
-  //   const fetchBookDetails = async () => {
-  //     try {
-  //       const token = localStorage.getItem("token");
-  //       const baseURLBook = `${
-  //         import.meta.env.VITE_SERVER_URI
-  //       }/api/books/${bookId}`;
-
-  //       const res = await axios.get(baseURLBook, {
-  //         headers: { Authorization: `Bearer ${token}` },
-  //       });
-  //       setBook(res.data);
-  //       // setAddedToFavorites(res.data.isFavorite); // Assuming the API provides this info
-  //     } catch (err) {
-  //       // setError("Failed to load book details.");
-  //     }
-  //   };
-
-  //   fetchBookDetails();
-  // }, [bookId]);
   return (
     <>
       <Box sx={{ maxWidth: 800, margin: "0 auto", padding: 4 }}>
@@ -138,7 +143,7 @@ const BookDetails = () => {
             }}
           >
             <IconButton
-              onClick={() => navigate(-1)}
+              onClick={() => navigate(-1) || navigate("/my-books")}
               sx={{
                 backgroundColor: "rgba(255, 255, 255, 0.8)",
                 "&:hover": {
@@ -226,7 +231,7 @@ const BookDetails = () => {
           }}
         />
 
-        <ReviewSection bookId={book._id} />
+        <ReviewSection reviews={reviews} bookId={bookId} />
       </Box>
 
       <CustomAlert

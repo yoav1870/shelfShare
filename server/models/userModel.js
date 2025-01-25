@@ -25,6 +25,7 @@ const userSchema = new Schema(
       },
     ],
     liked_books: [{ type: Schema.Types.ObjectId, ref: "Book" }],
+    fcmToken: { type: String },
   },
   { collection: "users", timestamps: true }
 );

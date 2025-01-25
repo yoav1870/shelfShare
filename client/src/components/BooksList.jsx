@@ -114,9 +114,9 @@ const BooksList = ({
           gap: 2,
         }}
       >
-        {books.map((book) => (
+        {books.map((book, index) => (
           <Card
-            key={book._id}
+            key={index}
             sx={{
               minWidth: 200,
               marginRight: direction === "row" ? 2 : 0,
