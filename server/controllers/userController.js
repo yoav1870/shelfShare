@@ -1,21 +1,20 @@
 const User = require("../models/userModel");
 const Review = require("../models/reviewModel");
+const { formatBookData } = require("../utils/tools");
+
 const userController = {
   async getBooksDonatedByUser(req, res) {
     try {
       const userId = req.user.id;
       const user = await User.findById(userId).populate({
         path: "donation_history.book",
-        select: "title genre",
       });
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }
-      const donatedBooks = user.donation_history.map((donation) => ({
-        title: donation.book?.title || "Unknown",
-        genre: donation.book?.genre || "Unknown",
-        date: donation.donatedAt,
-      }));
+      const donatedBooks = user.donation_history.map((donate) =>
+        formatBookData(donate.book, { date: donate.donatedAt })
+      );
       res.status(200).json(donatedBooks);
     } catch (err) {
       res.status(500).json({ error: "Internal server error" + err });
@@ -27,20 +26,19 @@ const userController = {
       const userId = req.user.id;
       const user = await User.findById(userId).populate({
         path: "request_history.book",
-        select: "title genre",
       });
 
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }
-      const requestedBooks = user.request_history.map((request) => ({
-        title: request.book?.title || "Unknown",
-        genre: request.book?.genre || "Unknown",
-        date: request.requestedAt,
-      }));
+
+      const requestedBooks = user.request_history.map((request) =>
+        formatBookData(request.book, { date: request.requestedAt })
+      );
+
       res.status(200).json(requestedBooks);
     } catch (err) {
-      res.status(500).json({ error: "Internal server error" + err });
+      res.status(500).json({ error: "Internal server error: " + err.message });
     }
   },
 
@@ -147,37 +145,17 @@ const userController = {
       }
 
       const userId = req.user.id;
-
       const user = await User.findById(userId).populate("liked_books");
 
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }
-      console.log("user.liked_books", user.liked_books);
-      const formattedBooks = user.liked_books.map((book) => ({
-        _id: book._id,
-        title: book.title,
-        author: book.author,
-        genre: book.genre,
-        status: book.status,
-        state: book.state,
-        donor_refId: book.donor_refId,
-        location: book.location,
-        metadata: {
-          description:
-            book.metadata?.description || "No description available.",
-          publisher: book.metadata?.publisher || "Unknown",
-          publishedDate: book.metadata?.publishedDate || "Unknown",
-          pageCount: book.metadata?.pageCount || 0,
-          thumbnail: book.metadata?.thumbnail || "/placeholder.png",
-        },
-        pics: book.pics || [],
-        averageRating: book.averageRating || 0,
-      }));
+      const formattedBooks = user.liked_books.map((book) =>
+        formatBookData(book)
+      );
 
       res.status(200).json(formattedBooks);
     } catch (err) {
-      console.error("Error fetching favorite books:", err);
       res.status(500).json({ error: "Internal server error: " + err.message });
     }
   },
