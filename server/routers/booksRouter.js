@@ -5,8 +5,10 @@ const booksRouter = new Router();
 
 booksRouter.get("/liked", booksController.getLikedBooks);
 booksRouter.get("/recommended", booksController.getRecommendedBooks);
-booksRouter.get("/genre/:genre", booksController.searchBookByGenre);
-booksRouter.get("/:title", booksController.searchBookByTitle);
+// booksRouter.get("/genre/:genre", booksController.searchBookByGenre);
+// booksRouter.get("/:title", booksController.searchBookByTitle);
+booksRouter.get("/search", booksController.searchBooks);
+
 booksRouter.get("/", booksController.getAllBooks);
 booksRouter.get("/details/:bookId", booksController.getBookDetails);
 

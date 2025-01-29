@@ -109,4 +109,54 @@ const generateNBooks = async (amount, userId) => {
   }
 };
 
-module.exports = { fetchBookDataById, generateNBooks };
+const fetchBooksByCategory = async (category) => {
+  const query = encodeURIComponent(`subject:${category}`);
+  const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${query}&key=${process.env.BOOKS_API_KEY}`;
+
+  try {
+    const fetch = (await import("node-fetch")).default;
+    const response = await fetch(apiUrl);
+
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+
+    if (data.items && data.items.length > 0) {
+      return data.items.slice(0, 5).map((item) => ({
+        _id: null,
+        title: item.volumeInfo.title || "Unknown",
+        author: item.volumeInfo.authors
+          ? item.volumeInfo.authors.join(", ")
+          : "Unknown",
+        genre: item.volumeInfo.categories
+          ? item.volumeInfo.categories.join(", ")
+          : "Uncategorized",
+        donor_refId: null,
+        status: "Available",
+        state: "new",
+        pics: [],
+        location: "External Source",
+        metadata: {
+          description:
+            item.volumeInfo.description || "No description available.",
+          publisher: item.volumeInfo.publisher || "Unknown publisher",
+          publishedDate: item.volumeInfo.publishedDate || "Unknown date",
+          pageCount: item.volumeInfo.pageCount || "N/A",
+          thumbnail: item.volumeInfo.imageLinks
+            ? item.volumeInfo.imageLinks.thumbnail
+            : null,
+        },
+        averageRating: null,
+      }));
+    } else {
+      return [];
+    }
+  } catch (err) {
+    console.error("Error fetching books by category:", err);
+    throw err;
+  }
+};
+
+module.exports = { fetchBookDataById, generateNBooks, fetchBooksByCategory };

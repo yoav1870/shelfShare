@@ -4,6 +4,7 @@ const User = require("../models/userModel");
 const {
   fetchBookDataById,
   generateNBooks,
+  fetchBooksByCategory,
 } = require("../services/googleBooksService");
 const { getRecommendations } = require("../services/recommendationService");
 const Review = require("../models/reviewModel");
@@ -329,6 +330,33 @@ const booksController = {
     } catch (err) {
       console.error("Error fetching book details:", err);
       res.status(500).json({ error: "Internal server error: " + err.message });
+    }
+  },
+  async searchBooks(req, res) {
+    try {
+      const { query, type } = req.query;
+
+      if (!query) {
+        return res.status(400).json({ error: "Query is required" });
+      }
+
+      let dbBooks = [];
+      let apiBooks = [];
+
+      if (type === "genre") {
+        dbBooks = await Book.find({ genre: query });
+
+        apiBooks = await fetchBooksByCategory(query);
+      } else if (type === "title") {
+        dbBooks = await Book.find({ $text: { $search: query } });
+
+        apiBooks = await fetchBookDataById(query);
+      }
+
+      res.status(200).json({ dbBooks, apiBooks });
+    } catch (err) {
+      console.error("Error searching books:", err);
+      res.status(500).json({ error: "Internal server error" });
     }
   },
 };
