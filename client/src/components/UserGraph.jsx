@@ -19,7 +19,6 @@ const UserGraph = ({ data, chartType, title }) => {
     return <p>No data available</p>;
   }
 
-  // TODO - Add support for more chart types until Idan will finish the backend
   return (
     <div style={{ textAlign: "center" }}>
       <h3>{title}</h3>
@@ -29,7 +28,6 @@ const UserGraph = ({ data, chartType, title }) => {
           <XAxis dataKey="name" />
           <YAxis />
           <Tooltip />
-          <Legend />
           <Bar dataKey="value" fill="#82ca9d" />
         </BarChart>
       )}

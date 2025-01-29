@@ -219,7 +219,7 @@ const booksController = {
 
   async unlikeBook(req, res) {
     try {
-      const { bookId } = req.body;
+      const { bookId } = req.params;
       const userId = req.user?.id;
 
       if (!bookId) {
@@ -240,7 +240,7 @@ const booksController = {
         return res.status(400).json({ error: "Book not liked" });
       }
 
-      user.liked_books = user.liked_books.filter((id) => id !== bookId);
+      user.liked_books.pull(bookId);
       await user.save();
       res.status(200).json({ message: "Book unliked successfully", user });
     } catch (err) {
@@ -301,7 +301,6 @@ const booksController = {
         return res.status(404).json({ error: "Book not found" });
       }
 
-      // Fetch reviews for the book
       const reviews = await Review.find({ book_refId: bookId })
         .populate("user_refId", "name email")
         .select("rating review_text date");

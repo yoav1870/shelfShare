@@ -137,6 +137,50 @@ const userController = {
       res.status(500).json({ error: "Internal server error" });
     }
   },
+
+  async getFavoriteBooks(req, res) {
+    try {
+      if (!req.user || !req.user.id) {
+        return res
+          .status(401)
+          .json({ error: "Unauthorized: No user ID provided" });
+      }
+
+      const userId = req.user.id;
+
+      const user = await User.findById(userId).populate("liked_books");
+
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      console.log("user.liked_books", user.liked_books);
+      const formattedBooks = user.liked_books.map((book) => ({
+        _id: book._id,
+        title: book.title,
+        author: book.author,
+        genre: book.genre,
+        status: book.status,
+        state: book.state,
+        donor_refId: book.donor_refId,
+        location: book.location,
+        metadata: {
+          description:
+            book.metadata?.description || "No description available.",
+          publisher: book.metadata?.publisher || "Unknown",
+          publishedDate: book.metadata?.publishedDate || "Unknown",
+          pageCount: book.metadata?.pageCount || 0,
+          thumbnail: book.metadata?.thumbnail || "/placeholder.png",
+        },
+        pics: book.pics || [],
+        averageRating: book.averageRating || 0,
+      }));
+
+      res.status(200).json(formattedBooks);
+    } catch (err) {
+      console.error("Error fetching favorite books:", err);
+      res.status(500).json({ error: "Internal server error: " + err.message });
+    }
+  },
 };
 
 module.exports = { userController };

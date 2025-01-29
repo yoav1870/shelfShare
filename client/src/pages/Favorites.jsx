@@ -1,70 +1,71 @@
 import { useState, useEffect } from "react";
-import { Box, Container, Typography, Grid, Card, CardContent, CardMedia } from "@mui/material";
+import { Box, Container, Typography } from "@mui/material";
 import axios from "axios";
 import { t } from "../tools/utils";
+import BooksList from "../components/BooksList";
+import BookSpinner from "../components/BookSpinner";
+import CustomAlert from "../components/CustomAlert";
 
 const Favorites = () => {
-  const [donations, setDonations] = useState([]);
-  const [error, setError] = useState(null);
-
-  const fetchDonations = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(`${import.meta.env.VITE_SERVER_URI}/api/user/donations`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setDonations(response.data);
-    } catch (err) {
-      console.error("Error fetching donations:", err);
-      setError(t("Error fetching donated books."));
-    }
-  };
-
+  const [favoriteBooks, setFavoriteBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [alert, setAlert] = useState({
+    open: false,
+    message: "",
+    severity: "info",
+  });
   useEffect(() => {
-    fetchDonations();
+    const fetchFavorites = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          `${import.meta.env.VITE_SERVER_URI}/api/user/favorites`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setFavoriteBooks(response.data);
+      } catch (err) {
+        console.error("Error fetching favorite books:", err);
+        setAlert({
+          open: true,
+          message: "Failed to load book details or reviews.",
+          severity: "error",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFavorites();
   }, []);
 
-  const renderBooks = () => (
-    <Grid container spacing={4}>
-      {donations.map((donation, index) => (
-        <Grid item xs={12} sm={6} md={4} key={index}>
-          <Card>
-            <CardMedia
-              component="img"
-              height="200"
-              image="placeholder.jpg"
-              alt={donation.title}
-            />
-            <CardContent>
-              <Typography variant="h6">{donation.title}</Typography>
-              <Typography variant="body2" color="textSecondary">
-                {donation.genre}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      ))}
-    </Grid>
-  );
-
   return (
-    <Box>
-      <Container>
-        <Typography variant="h5" gutterBottom>
-          {t("Favorite Books")}
-        </Typography>
-
-        {error ? (
-          <Typography variant="body1" color="error">
-            {error}
+    <>
+      <Box>
+        <Container>
+          <Typography variant="h5" gutterBottom>
+            {"Favorite Books"}
           </Typography>
-        ) : donations.length === 0 ? (
-          <Typography variant="body1">{t("No books donated yet.")}</Typography>
-        ) : (
-          renderBooks()
-        )}
-      </Container>
-    </Box>
+          {loading ? (
+            <Typography variant="body1" color="error">
+              <BookSpinner />
+            </Typography>
+          ) : favoriteBooks.length === 0 ? (
+            <Typography variant="body1">
+              {t("No favorite books yet.")}
+            </Typography>
+          ) : (
+            <BooksList books={favoriteBooks} />
+          )}
+        </Container>
+      </Box>
+      <CustomAlert
+        open={alert.open}
+        message={alert.message}
+        severity={alert.severity}
+        onClose={() => setAlert({ open: false, message: "", severity: "info" })}
+      />
+    </>
   );
 };
 
