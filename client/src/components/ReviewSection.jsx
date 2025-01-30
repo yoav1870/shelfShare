@@ -41,7 +41,7 @@ const ReviewSection = ({ reviews: initialReviews, bookId }) => {
 
     try {
       const token = localStorage.getItem("token");
-      const baseURL = `${import.meta.env.VITE_SERVER_URI}/api/reviews`;
+      const baseURL = `${import.meta.env.VITE_SERVER_URI}/api/review`;
 
       const response = await axios.post(
         baseURL,

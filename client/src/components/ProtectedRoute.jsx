@@ -18,7 +18,7 @@ const ProtectedRoute = ({ children, admin }) => {
     <>
       <AppTop />
       <Box sx={{ flex: 1, pb: "56px" }}>{children}</Box>
-      <Footer />
+      <Footer isAdmin={isAdmin} />
     </>
   );
 };

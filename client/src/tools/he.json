@@ -31,5 +31,6 @@
   "select-limit": "בחר מספר ספרים להציג",
   "no-books-available": "אין ספרים זמינים",
   "book-added": "הספר נוסף בהצלחה תודה על התרומה",
-  "server-error": "שגיאת שרת"
+  "server-error": "שגיאת שרת",
+  "admin-profile": "פרופיל מנהל"
 }

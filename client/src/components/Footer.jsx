@@ -1,14 +1,14 @@
 import { BottomNavigation, BottomNavigationAction } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import TravelExploreIcon from "@mui/icons-material/TravelExplore";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import BookIcon from "@mui/icons-material/Book";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { t } from "../tools/utils";
 
-const Footer = () => {
+const Footer = ({ isAdmin }) => {
   const theme = useTheme();
   const navigate = useNavigate();
 
@@ -31,19 +31,22 @@ const Footer = () => {
         justifyContent: "space-around",
       }}
     >
-      <BottomNavigationAction
-        label={t("explore")}
-        icon={<TravelExploreIcon />}
-        onClick={() => handleNavigation("/explore")}
-        sx={{
-          color: theme.palette.text.primary,
-          "& .MuiBottomNavigationAction-label": {
-            color: theme.palette.primary.light,
-            fontSize: "0.7rem",
-            marginTop: "0.1rem",
-          },
-        }}
-      />
+      {isAdmin && (
+        <BottomNavigationAction
+          label={t("admin-profile")}
+          icon={<AdminPanelSettingsIcon />}
+          onClick={() => handleNavigation("/admin/dashboard")}
+          sx={{
+            color: theme.palette.text.primary,
+            "& .MuiBottomNavigationAction-label": {
+              color: theme.palette.primary.light,
+              fontSize: "0.7rem",
+              marginTop: "0.1rem",
+            },
+          }}
+        />
+      )}
+
       <BottomNavigationAction
         label={t("search")}
         icon={<SearchIcon />}
