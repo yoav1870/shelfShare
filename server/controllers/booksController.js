@@ -9,6 +9,7 @@ const {
 const { getRecommendations } = require("../services/recommendationService");
 const Review = require("../models/reviewModel");
 const admin = require("../config/firebaseAdmin");
+const NotificationService = require("../services/notify");
 
 const booksController = {
   async getAllBooks(req, res) {
@@ -57,41 +58,9 @@ const booksController = {
         return res.status(201).json({ message: "Book added successfully." });
       }
 
-      const usersToNotify = await User.find()
-        .populate({
-          path: "liked_books",
-          match: { title: book.title },
-        })
-        .exec();
-      console.log("@@@@@@@@@@@@@@@@@@@@@ START @@@@@@@@@@@@@@@@@@@@@");
-      console.log("usersToNotify", usersToNotify);
-      const filteredUsers = usersToNotify.filter(
-        (user) => user.liked_books.length > 0
-      );
-      console.log("filteredUsers", filteredUsers);
-      console.log("@@@@@@@@@@@@@@@@@@@@@ END @@@@@@@@@@@@@@@@@@@@@");
+      // no need to wait for the notification to be sent for add book
+      NotificationService.notifyUsersAboutBook(book.title);
 
-      for (const user of filteredUsers) {
-        if (user.fcmToken) {
-          const message = {
-            notification: {
-              title: "Book Available!",
-              body: `A book titled "${book.title}" is now available.`,
-            },
-            token: user.fcmToken,
-          };
-
-          try {
-            await admin.messaging().send(message);
-            console.log(`Notification sent to ${user.email}`);
-          } catch (err) {
-            console.error(
-              `Error sending notification to ${user.email}:`,
-              err.message
-            );
-          }
-        }
-      }
       res.status(201).json("Book added successfully");
     } catch (err) {
       console.error("Error adding book:", err);

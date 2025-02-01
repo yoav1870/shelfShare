@@ -16,6 +16,7 @@ import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 
 const BooksList = ({
   books = [],
+  isApiBooks = false,
   showActionButton = false,
   onBookBorrowed,
   direction = "column",
@@ -27,6 +28,11 @@ const BooksList = ({
     message: "",
     severity: "info",
   });
+
+  const handleCardClick = (book) => {
+    if (isApiBooks) return;
+    navigate(`/book/${book._id}`, { state: { book } });
+  };
 
   const handleBorrowRequest = async (book) => {
     const token = localStorage.getItem("token");
@@ -56,10 +62,6 @@ const BooksList = ({
         severity: "error",
       });
     }
-  };
-
-  const handleCardClick = (book) => {
-    navigate(`/book/${book._id}`, { state: { book } });
   };
 
   const handleCloseAlert = () => {

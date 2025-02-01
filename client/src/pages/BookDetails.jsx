@@ -7,6 +7,7 @@ import {
   Button,
   useTheme,
 } from "@mui/material";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
@@ -28,6 +29,7 @@ const BookDetails = () => {
     message: "",
     severity: "info",
   });
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     const fetchBookData = async () => {
@@ -61,75 +63,27 @@ const BookDetails = () => {
     fetchBookData();
   }, [bookId]);
 
-  const handleAddToFavorites = async () => {
-    const token = localStorage.getItem("token");
-    const baseURL = import.meta.env.VITE_SERVER_URI;
-
-    try {
-      const response = await axios.put(
-        `${baseURL}/api/books/like/${bookId}`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      if (response.status === 200) {
-        setAddedToFavorites(true);
-        setAlert({
-          open: true,
-          message: "Added to favorites.",
-          severity: "success",
-        });
-      }
-    } catch (error) {
-      console.error("Failed to add to favorites:", error);
-      setAlert({
-        open: true,
-        message: "Failed to add to favorites.",
-        severity: "error",
-      });
-    }
+  const handleNextImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === images.length - 1 ? 0 : prevIndex + 1
+    );
   };
 
-  const handleRemoveFromFavorites = async () => {
-    const token = localStorage.getItem("token");
-    const baseURL = import.meta.env.VITE_SERVER_URI;
-
-    try {
-      const response = await axios.put(
-        `${baseURL}/api/books/unlike/${bookId}`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      if (response.status === 200) {
-        setAddedToFavorites(false);
-        setAlert({
-          open: true,
-          message: "Removed from favorites.",
-          severity: "info",
-        });
-      }
-    } catch (error) {
-      console.error("Failed to remove from favorites:", error);
-      setAlert({
-        open: true,
-        message: "Failed to remove from favorites.",
-        severity: "error",
-      });
-    }
-  };
-
-  const handleToggleFavorite = () => {
-    if (addedToFavorites) {
-      handleRemoveFromFavorites();
-    } else {
-      handleAddToFavorites();
-    }
+  const handlePrevImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+    );
   };
 
   if (!book) {
     return <BookSpinner />;
   }
+
+  const images = [
+    book.metadata?.thumbnail,
+    ...(book.pics?.length ? book.pics : []),
+  ].filter(Boolean);
+
   return (
     <>
       <Box sx={{ maxWidth: 800, margin: "0 auto", padding: 4 }}>
@@ -156,15 +110,53 @@ const BookDetails = () => {
             </IconButton>
           </Box>
 
-          <img
-            src={book.metadata?.thumbnail || "/placeholder.png"}
-            alt={book.title}
-            style={{
-              width: "100%",
-              height: 300,
-              objectFit: "cover",
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              position: "relative",
             }}
-          />
+          >
+            {images.length > 1 && (
+              <IconButton
+                onClick={handlePrevImage}
+                sx={{
+                  position: "absolute",
+                  left: 0,
+                  zIndex: 2,
+                  backgroundColor: "rgba(255, 255, 255, 0.7)",
+                }}
+              >
+                <ArrowBackIosIcon />
+              </IconButton>
+            )}
+
+            <img
+              src={images[currentImageIndex] || "/placeholder.png"}
+              alt={book.title}
+              style={{
+                width: "100%",
+                height: 300,
+                objectFit: "cover",
+              }}
+            />
+
+            {images.length > 1 && (
+              <IconButton
+                onClick={handleNextImage}
+                sx={{
+                  position: "absolute",
+                  right: 0,
+                  zIndex: 2,
+                  backgroundColor: "rgba(255, 255, 255, 0.7)",
+                }}
+              >
+                <ArrowForwardIosIcon />
+              </IconButton>
+            )}
+          </Box>
+
           <Typography
             variant="h4"
             sx={{
@@ -195,7 +187,7 @@ const BookDetails = () => {
                 backgroundColor: "primary.light",
               },
             }}
-            onClick={handleToggleFavorite}
+            onClick={() => setAddedToFavorites(!addedToFavorites)}
           >
             {addedToFavorites ? "Remove from Favorites" : "Add to Favorites"}
           </Button>
@@ -224,12 +216,7 @@ const BookDetails = () => {
           {book.metadata?.description || "No description available."}
         </Typography>
 
-        <Divider
-          sx={{
-            marginY: 2,
-            borderColor: "primary.main",
-          }}
-        />
+        <Divider sx={{ marginY: 2, borderColor: "primary.main" }} />
 
         <ReviewSection reviews={reviews} bookId={bookId} />
       </Box>

@@ -9,46 +9,33 @@ firebase.initializeApp(self.FIREBASE_CONFIG);
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-  const notificationTitle = payload?.notification?.title || "Test Notification";
+  console.log("Received background message:", payload);
+
+  const notificationTitle =
+    payload.notification?.title || payload.data?.title || "Test Notification";
   const notificationOptions = {
     body:
-      payload?.notification?.body ||
+      payload.notification?.body ||
+      payload.data?.body ||
       "This is a test notification from Firebase",
-    icon: "/icon.webp",
+    icon: payload.data?.icon || "/icon.webp",
   };
+
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
-//FIXME: test with devtools:!!!!!
 self.addEventListener("push", (event) => {
-  console.log("Generic push event triggered:", event);
+  const data = event.data.json();
 
-  let data = {
-    title: "DevTools Push Test",
-    body: "This is a fallback test notification triggered via DevTools.",
-    icon: "/icon.webp",
-  };
-
-  try {
-    if (event.data) {
-      data = event.data.json();
-    }
-  } catch (error) {
-    console.error("Failed to parse push data as JSON:", error);
-    if (event.data) {
-      data.body = event.data.text();
-    }
-  }
-
-  const notificationTitle = data.title || "No Title";
+  const notificationTitle =
+    data.notification?.title || data.title || "Book Available!";
   const notificationOptions = {
-    body: data.body || "No Body",
+    body:
+      data.notification?.body ||
+      data.body ||
+      "A book from your wishlist is now available.",
     icon: data.icon || "/icon.webp",
   };
 
-  console.log("Notification details:", {
-    title: notificationTitle,
-    options: notificationOptions,
-  });
   self.registration.showNotification(notificationTitle, notificationOptions);
 });

@@ -37,33 +37,38 @@ const AddBookForm = () => {
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
-    if (files.length + formData.pics.length > 3) {
-      setAlert({ open: true, message: t("max-pics-error"), severity: "error" });
+
+    // Ensure exactly 3 images are uploaded
+    if (formData.pics.length + files.length > 3) {
+      setAlert({
+        open: true,
+        message: "You can upload up to 3 images",
+        severity: "error",
+      });
       return;
     }
 
     files.forEach((file) => {
       const reader = new FileReader();
+      reader.readAsDataURL(file);
       reader.onload = () => {
-        setFormData((prevData) => ({
-          ...prevData,
-          pics: [...prevData.pics, reader.result],
+        setFormData((prev) => ({
+          ...prev,
+          pics: [...prev.pics, reader.result], // Store image as Base64
         }));
       };
-      reader.readAsDataURL(file);
     });
   };
 
   const handleDeletePic = (index) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      pics: prevData.pics.filter((_, i) => i !== index),
+    setFormData((prev) => ({
+      ...prev,
+      pics: prev.pics.filter((_, i) => i !== index),
     }));
   };
 
