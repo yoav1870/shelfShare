@@ -5,37 +5,49 @@ importScripts(
 
 (async () => {
   try {
+    // Fetch Firebase configuration from the server
     const response = await fetch(
       "https://shelfshare.onrender.com/firebase-config"
     );
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch Firebase config: ${response.statusText}`
+      );
+    }
     const firebaseConfig = await response.json();
 
+    // Initialize Firebase with the fetched config
     firebase.initializeApp(firebaseConfig);
-
-    console.log("Firebase initialized with config:", firebaseConfig);
   } catch (error) {
-    console.error("Failed to fetch Firebase config:", error);
+    console.error("Failed to fetch or initialize Firebase config:", error);
   }
 })();
 
-const messaging = firebase.messaging();
+// Set up Firebase Messaging
+let messaging;
+try {
+  messaging = firebase.messaging();
 
-messaging.onBackgroundMessage((payload) => {
-  console.log("Received background message:", payload);
+  messaging.onBackgroundMessage((payload) => {
+    console.log("Received background message:", payload);
 
-  const notificationTitle =
-    payload.notification?.title || payload.data?.title || "Test Notification";
-  const notificationOptions = {
-    body:
-      payload.notification?.body ||
-      payload.data?.body ||
-      "This is a test notification from Firebase",
-    icon: payload.data?.icon || "/icon.webp",
-  };
+    const notificationTitle =
+      payload.notification?.title || payload.data?.title || "Test Notification";
+    const notificationOptions = {
+      body:
+        payload.notification?.body ||
+        payload.data?.body ||
+        "This is a test notification from Firebase",
+      icon: payload.data?.icon || "/icon.webp",
+    };
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
-});
+    self.registration.showNotification(notificationTitle, notificationOptions);
+  });
+} catch (error) {
+  console.error("Failed to initialize Firebase Messaging:", error);
+}
 
+// Handle Push events
 self.addEventListener("push", (event) => {
   let data = {};
 
