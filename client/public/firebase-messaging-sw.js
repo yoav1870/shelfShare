@@ -3,12 +3,18 @@ importScripts(
   "https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js"
 );
 
-self.addEventListener("install", async (event) => {
-  const response = await fetch("/firebase-config");
-  const firebaseConfig = await response.json();
+(async () => {
+  try {
+    const response = await fetch("/firebase-config");
+    const firebaseConfig = await response.json();
 
-  firebase.initializeApp(firebaseConfig);
-});
+    firebase.initializeApp(firebaseConfig);
+
+    console.log("Firebase initialized with config:", firebaseConfig);
+  } catch (error) {
+    console.error("Failed to fetch Firebase config:", error);
+  }
+})();
 
 const messaging = firebase.messaging();
 
