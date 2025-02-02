@@ -2,9 +2,6 @@ const express = require("express");
 require("./config/db");
 const cors = require("cors");
 const { authMiddleware } = require("./middleware/auth");
-
-const { generateNBooks } = require("./services/googleBooksService");
-
 const app = express();
 
 const { authRouter } = require("./routers/authRouter");
