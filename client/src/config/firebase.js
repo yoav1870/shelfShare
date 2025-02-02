@@ -22,13 +22,11 @@ export const requestPermission = async (userId) => {
     return;
   }
 
-  console.log("Requesting notification permission...");
   try {
     const token = await getToken(messaging, {
       vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
     });
     if (token) {
-      console.log("FCM Token:", token);
       await saveTokenToBackend(userId, token);
     } else {
       console.log(
@@ -52,7 +50,6 @@ const saveTokenToBackend = async (userId, token) => {
     });
 
     if (response.ok) {
-      console.log("FCM token saved to backend successfully.");
     } else {
       console.error("Failed to save FCM token to backend.");
       console.error("Response:", response);

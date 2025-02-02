@@ -27,3 +27,4 @@ package-lock.json
 *.docx
 SDD.docx
 firebase-config.js
+firebase-messaging-sw.js
