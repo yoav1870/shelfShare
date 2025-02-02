@@ -5,11 +5,10 @@ importScripts(
 
 (async () => {
   try {
-    console.log("1", 1);
-    const response = await fetch("/firebase-config");
-    console.log("response", response);
+    const response = await fetch(
+      "https://shelfshare.onrender.com/firebase-config"
+    );
     const firebaseConfig = await response.json();
-    console.log("firebaseConfig", firebaseConfig);
 
     firebase.initializeApp(firebaseConfig);
 
