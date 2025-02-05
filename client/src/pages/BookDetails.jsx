@@ -31,6 +31,68 @@ const BookDetails = () => {
   });
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
+  const handleLikeBook = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const baseURL = import.meta.env.VITE_SERVER_URI;
+
+      const response = await axios.put(
+        `${baseURL}/api/books/like/${bookId}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.status === 200) {
+        setAddedToFavorites(true);
+        setAlert({
+          open: true,
+          message: "Book liked successfully!",
+          severity: "success",
+        });
+      }
+    } catch (error) {
+      console.error("Error liking book:", error);
+      setAlert({
+        open: true,
+        message: "Failed to like the book.",
+        severity: "error",
+      });
+    }
+  };
+
+  const handleUnlikeBook = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const baseURL = import.meta.env.VITE_SERVER_URI;
+
+      const response = await axios.put(
+        `${baseURL}/api/books/unlike/${bookId}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.status === 200) {
+        setAddedToFavorites(false);
+        setAlert({
+          open: true,
+          message: "Book unliked successfully!",
+          severity: "info",
+        });
+      }
+    } catch (error) {
+      console.error("Error unliking book:", error);
+      setAlert({
+        open: true,
+        message: "Failed to unlike the book.",
+        severity: "error",
+      });
+    }
+  };
+
   useEffect(() => {
     const fetchBookData = async () => {
       try {
@@ -187,7 +249,7 @@ const BookDetails = () => {
                 backgroundColor: "primary.light",
               },
             }}
-            onClick={() => setAddedToFavorites(!addedToFavorites)}
+            onClick={addedToFavorites ? handleUnlikeBook : handleLikeBook}
           >
             {addedToFavorites ? "Remove from Favorites" : "Add to Favorites"}
           </Button>
