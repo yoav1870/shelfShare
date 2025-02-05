@@ -10,8 +10,10 @@ const getRecommendations = async (userId) => {
     }
 
     const { favoriteGenres = [], favoriteAuthors = [] } = user.preferences;
+    const bookSet = new Set();
+    const uniqueBooks = [];
 
-    const recommendedBooks = await Book.find({
+    const preferredBooks = await Book.find({
       $and: [
         {
           $or: [
@@ -21,18 +23,29 @@ const getRecommendations = async (userId) => {
         },
         { donor_refId: { $ne: userId } },
       ],
-    }).limit(5);
+    });
 
-    if (recommendedBooks.length < 5) {
-      const fallbackBooks = await Book.find({
-        donor_refId: { $ne: userId },
-      }).limit(5 - recommendedBooks.length);
-
-      const allRecommendedBooks = recommendedBooks.concat(fallbackBooks);
-      return allRecommendedBooks;
+    for (let book of preferredBooks) {
+      if (!bookSet.has(book.title)) {
+        bookSet.add(book.title);
+        uniqueBooks.push(book);
+      }
+      if (uniqueBooks.length >= 7) break;
     }
 
-    return recommendedBooks;
+    if (uniqueBooks.length < 7) {
+      const fallbackBooks = await Book.find({ donor_refId: { $ne: userId } });
+
+      for (let book of fallbackBooks) {
+        if (!bookSet.has(book.title)) {
+          bookSet.add(book.title);
+          uniqueBooks.push(book);
+        }
+        if (uniqueBooks.length >= 7) break;
+      }
+    }
+
+    return uniqueBooks;
   } catch (err) {
     console.error("Error in recommendation service:", err.message);
     throw err;
